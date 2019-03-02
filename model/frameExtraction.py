@@ -29,28 +29,7 @@ def frame_extraction_cv2(source, folder_frame):
         print('Read a new frame: ', success)
         count += 1
 
-def getgroundTruth(directory_txt):
-    """Read txt files containing bounding boxes (ground truth and detections)."""
-    # Read GT detections from txt file
-    # Each value of each line is  "frame_id, x, y, width, height,confidence" respectively
-    boundingBoxes=[]
-    txt_gt = open(directory_txt, "r")
-    for line in txt_gt:
-        splitLine = line.split(",")
-        frameid = int(splitLine[0])
-        topleft = [float(splitLine[2]), float(splitLine[3])]
-        width = float(splitLine[4])
-        height = float(splitLine[5])
-        confidence = float(splitLine[6])
-        bb = GroundTruth(
-            frameid,
-            topleft,
-            width,
-            height,
-            confidence)
-        boundingBoxes.append(bb)
-    txt_gt.close()
-    return boundingBoxes
+
 
 
 
@@ -64,4 +43,4 @@ folder_frame ='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/
 dir_gt='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
 #frame_extraction_ffmpeg(source, folder_frame)
 
-getgroundTruth(dir_gt)
+#getgroundTruth(dir_gt)

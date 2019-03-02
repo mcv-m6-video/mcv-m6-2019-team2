@@ -1,5 +1,5 @@
 from typing import Optional
-
+import numpy as np
 
 class GroundTruth:
 
@@ -66,6 +66,12 @@ class GroundTruth:
 
     def to_result(self):
         return [self.top_left[0], self.top_left[1], self.get_bottom_right()[0], self.get_bottom_right()[1]]
+
+
+    def modify_gt(self, noise):
+        self.
+
+        return
 
     def __str__(self):
         return str(self.top_left) + ', ' + str(self.width) + 'x' + str(self.height)
