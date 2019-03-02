@@ -3,14 +3,18 @@ from typing import Optional
 
 class GroundTruth:
 
+    frame_id: int
     top_left: (float, float)
     width: float
     height: float
+    confidence: float
 
-    def __init__(self, top_left=(0, 0), width=0, height=0):
+    def __init__(self,frame_id=0 ,top_left=(0, 0), width=0, height=0, confidence=0):
+        self.frame_id=frame_id
         self.top_left = top_left
         self.width = width
         self.height = height
+        self.confidence= confidence
 
     def get_bottom_right(self) -> (float, float):
         return self.top_left[0] + self.width, self.top_left[1] + self.height
@@ -20,6 +24,11 @@ class GroundTruth:
 
     def get_top_right(self) -> (float, float):
         return self.top_left[0], self.top_left[1] + self.height
+    def get_condidence(self):
+        return self.confidence
+
+    def get_frame_id(self):
+        return self.frame_id
 
     def contains_point(self, point: (float, float)) -> bool:
         return (self.top_left[0] <= point[0] <= self.get_bottom_right()[0] and
@@ -52,7 +61,7 @@ class GroundTruth:
 
         return rec
 
-    def ioi(self, other: 'GroundTruth') -> float:
+    def iou(self, other: 'GroundTruth') -> float:
         return self.intersection(other).get_area() / self.union(other).get_area()
 
     def to_result(self):
