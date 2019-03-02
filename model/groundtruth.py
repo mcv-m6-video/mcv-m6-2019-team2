@@ -1,5 +1,6 @@
 from typing import Optional
 import numpy as np
+import random
 
 class GroundTruth:
 
@@ -69,8 +70,11 @@ class GroundTruth:
 
 
     def modify_gt(self, noise):
-        self.
-
+        x=random.uniform(self.top_left[0]-self.top_left[1]*noise, self.top_left[0]+self.top_left[0]*noise)
+        y=random.uniform(self.top_left[1]-self.top_left[1]*noise, self.top_left[1]+self.top_left[1]*noise)
+        self.top_left=[x,y]
+        self.width=random.uniform(self.width-self.width*noise, self.width+self.width*noise)
+        self.height=random.uniform(self.height-self.height*noise, self.height+self.height*noise)
         return
 
     def __str__(self):

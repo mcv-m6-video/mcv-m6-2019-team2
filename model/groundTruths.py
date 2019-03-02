@@ -1,12 +1,11 @@
 from typing import Optional
 from .groundtruth import GroundTruth
-from .frameExtraction import getgroundTruth
 import numpy as np
-
+import random
 
 class GroundTruths:
 
-    listGd: list[GroundTruth]
+    listGd: list
 
     def __init__(self,listGd=[]):
         self.listGd=listGd
@@ -35,15 +34,21 @@ class GroundTruths:
 
     def modify_random_gt(self, prob):
         rd = np.random.choice([0, 1], size=(len(self.listGd),), p=[1 - prob, prob])
-        for i in enumerate(rd):
+
+        for i,j in enumerate(rd):
             if (rd[i]):
-                self.listGd[i].modify_gt()
+                noise=random.uniform(0,0.5)
+                self.listGd[i].modify_gt(noise)
 
     def eliminate_random_gt(self, prob):
         rd=np.random.choice([0,1],size=(len(self.listGd),), p=[1-prob,prob])
-        for i in enumerate(rd):
-            if(rd[i]):
-                self.listGd[i].remove()
+        ind=[]
+        for i,j in enumerate(rd):
+            if(rd[i]):ind.append(i)
+        for i in reversed(ind):self.listGd.pop(i)
+
+
+
 
 
 

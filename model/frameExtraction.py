@@ -1,6 +1,7 @@
 import os
 import cv2
 from model import GroundTruth
+from model import GroundTruths
 
 # need to be installed "brew install ffmpeg"
 
@@ -44,3 +45,9 @@ dir_gt='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c01
 #frame_extraction_ffmpeg(source, folder_frame)
 
 #getgroundTruth(dir_gt)
+
+bb=GroundTruths()
+bb.getgroundTruth(dir_gt)
+print(len(bb.listGd))
+bb.modify_random_gt(0.1)
+print(len(bb.listGd))
