@@ -1,5 +1,5 @@
 import numpy as np
-from evaluation.iou_bbox import iou_bbox
+
 
 def performance_accumulation_pixel(pixel_candidates, pixel_annotation):
     """ 
