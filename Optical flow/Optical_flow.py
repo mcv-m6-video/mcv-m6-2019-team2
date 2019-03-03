@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
+
 
 # based on flow development kit of kitti web
 
@@ -48,6 +50,12 @@ def msen(F_gt, F_test):
 
     MSEN = np.mean(SEN)
 
+    plt.hist(E[F_valid_gt == 1], bins=40, density=True)
+    plt.title('Optical Flow error')
+    plt.xlabel('MSEN')
+    plt.ylabel('Number of pixels')
+    plt.show()
+
     return MSEN
 
 
@@ -70,6 +78,12 @@ def pepn(F_gt, F_test,th):
     PEPN = (np.sum(SEN > th)/len(SEN))*100
 
     return PEPN
+
+
+
+
+
+
 
 
 gt_dir1 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000045_10.png"
