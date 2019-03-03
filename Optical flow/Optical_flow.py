@@ -51,31 +51,51 @@ def msen(F_gt, F_test):
     return MSEN
 
 
+def pepn(F_gt, F_test,th):
+
+    SEN = []
+
+    E_du = (F_gt[:, :, 0]-F_test[:, :, 0])
+
+    E_dv = (F_gt[:, :, 1]-F_test[:, :, 1])
+
+    E = np.sqrt(E_du ** 2+E_dv ** 2)
+
+    F_valid_gt = F_gt[:, :, 2]
+
+    E[F_valid_gt == 0] = 0  # 0s in ocluded pixels
+
+    SEN = np.append(SEN, E[F_valid_gt != 0])  # take in account the error of the non-ocluded pixels
+
+    PEPN = (np.sum(SEN > th)/len(SEN))*100
+
+    return PEPN
+
+
 gt_dir1 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000045_10.png"
 
 test_dir1 = '/Users/quim/Desktop/untitled/datasets/kitti/results/LKflow_000045_10.png'
 
 F_gt1, F_test1 = flow_read(gt_dir1,test_dir1)
 
+MSEN1 = msen(F_gt1, F_test1)
+PEPN1 = pepn(F_gt1, F_test1, 3)
 
-MSE1 = msen(F_gt1, F_test1)
-
-print(MSE1)
-
+print(MSEN1)
+print(PEPN1)
 
 
 
 gt_dir2 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000157_10.png"
-
 test_dir2 = '/Users/quim/Desktop/untitled/datasets/kitti/results/LKflow_000157_10.png'
 
 F_gt2, F_test2 = flow_read(gt_dir2,test_dir2)
 
+MSEN2 = msen(F_gt2, F_test2)
+PEPN2 = pepn(F_gt2, F_test2, 3)
 
-MSE2 = msen(F_gt2, F_test2)
-
-print(MSE2)
-
+print(MSEN2)
+print(PEPN2)
 
 
 
