@@ -71,5 +71,4 @@ def iou_overtime(gt:BoundingBoxes_Video,detections:BoundingBoxes_Video,thres=0.1
         else:
             iou_mean=iou_frame
         iou_by_frame.append(iou_mean)
-
     return iou_by_frame
