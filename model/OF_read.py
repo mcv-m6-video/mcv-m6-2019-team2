@@ -1,14 +1,13 @@
 import cv2
-import numpy as np
 
 import math
-
-from matplotlib import pyplot as plt
 
 
 # based on flow development kit of kitti web
 
 def flow_read(gt_dir, test_dir):
+
+    # cv2 imread ---> BGR / RGB
 
     gt_kitti = cv2.imread(gt_dir, -1)
 
@@ -18,11 +17,11 @@ def flow_read(gt_dir, test_dir):
 
     test_kitti.astype(float)
 
-    u_test = (test_kitti[:, :, 1].ravel() - math.pow(2, 15)) / 64
+    u_test = (test_kitti[:, :, 2].ravel() - math.pow(2, 15)) / 64
 
-    v_test = (test_kitti[:, :, 2].ravel() - math.pow(2, 15)) / 64
+    v_test = (test_kitti[:, :, 1].ravel() - math.pow(2, 15)) / 64
 
-    u_gt = (gt_kitti[:, :, 1].ravel() - math.pow(2, 15)) / 64
+    u_gt = (gt_kitti[:, :, 2].ravel() - math.pow(2, 15)) / 64
 
     v_gt = (gt_kitti[:, :, 1].ravel() - math.pow(2, 15)) / 64
 
