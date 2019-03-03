@@ -1,9 +1,9 @@
 from typing import Optional
-from .groundtruth import GroundTruth
+from .BoundingBoxes import BoundingBoxes
 import numpy as np
 import random
 
-class GroundTruths:
+class BoundingBoxes_Video:
 
     listGd: list
 
@@ -23,7 +23,7 @@ class GroundTruths:
             width = float(splitLine[4])
             height = float(splitLine[5])
             confidence = float(splitLine[6])
-            self.listGd.append(GroundTruth(frameid,topleft,width,height,confidence))
+            self.listGd.append(BoundingBoxes(frameid,topleft,width,height,confidence))
         txt_gt.close()
 
     def modify_random_gt(self, prob):
@@ -40,6 +40,25 @@ class GroundTruths:
         for i,j in enumerate(rd):
             if(rd[i]):ind.append(i)
         for i in reversed(ind):self.listGd.pop(i)
+
+    def get_num_frames(self):
+        frame=0
+        for i in self.listGd:
+            if (i.frame_id!=frame):
+                frame=i.frame_id
+        return frame
+
+    def get_detections_by_frame(self, numb_frame):
+        listatrr=BoundingBoxes_Video()
+        index=[]
+        j=0
+        for i in self.listGd:
+            j+=1
+            if i.frame_id==numb_frame:
+                listatrr.listGd.append(i)
+                index.append(j)
+
+        return index, listatrr
 
 
 

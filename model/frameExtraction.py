@@ -1,7 +1,7 @@
 import os
 import cv2
-from model import GroundTruth
-from model import GroundTruths
+from model import BoundingBoxes_Video
+from model import BoundingBoxes
 from metrics import *
 # need to be installed "brew install ffmpeg"
 
@@ -42,24 +42,30 @@ video_source = source + 'vdo.avi'
 folder_frame ='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/video_frame'
 
 dir_gt='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
+dir_gt='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
 #frame_extraction_ffmpeg(source, folder_frame)
 
 #getgroundTruth(dir_gt)
 
-bb=GroundTruths()
+bb=BoundingBoxes_Video()
 bb.getgroundTruth(dir_gt)
 #print(len(bb.listGd))
-bb.modify_random_gt(0)
-bb.eliminate_random_gt(0.5)
+bb.modify_random_gt(0.2)
+bb.eliminate_random_gt(0.2)
 print(len(bb.listGd))
-bb2=GroundTruths()
+bb2=BoundingBoxes_Video()
 bb2.getgroundTruth(dir_gt)
 #print(len(bb2.listGd))
 
-
-[TP,FP,FN]=iou_gt(bb2,bb)
+list=iou_overtime(bb,bb2)
+print(len(list))
+"""[TP,FP,FN]=iou_gt(bb2,bb)
+[precision, sensitivity, accuracy]= performance_evaluation(TP, FN, FP)
 print(TP)
 print(FP)
 print(FN)
+print('Precision:',precision)
+print('sensitivity:',sensitivity)
+print('accuracy:',accuracy)"""
 
 
