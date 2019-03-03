@@ -8,7 +8,7 @@ class GroundTruths:
     listGd: list
 
     def __init__(self,listGd=[]):
-        self.listGd=listGd
+        self.listGd=[]
 
     def getgroundTruth(self,directory_txt):
         """Read txt files containing bounding boxes (ground truth and detections)."""
@@ -23,13 +23,7 @@ class GroundTruths:
             width = float(splitLine[4])
             height = float(splitLine[5])
             confidence = float(splitLine[6])
-            bb = GroundTruth(
-                frameid,
-                topleft,
-                width,
-                height,
-                confidence)
-            self.listGd.append(bb)
+            self.listGd.append(GroundTruth(frameid,topleft,width,height,confidence))
         txt_gt.close()
 
     def modify_random_gt(self, prob):

@@ -2,7 +2,7 @@ import os
 import cv2
 from model import GroundTruth
 from model import GroundTruths
-
+from metrics import *
 # need to be installed "brew install ffmpeg"
 
 def frame_extraction_ffmpeg(source, folder_frame):
@@ -48,6 +48,18 @@ dir_gt='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c01
 
 bb=GroundTruths()
 bb.getgroundTruth(dir_gt)
-print(len(bb.listGd))
+#print(len(bb.listGd))
 bb.modify_random_gt(0.1)
+bb.eliminate_random_gt(0)
 print(len(bb.listGd))
+bb2=GroundTruths()
+bb2.getgroundTruth(dir_gt)
+#print(len(bb2.listGd))
+
+
+[TP,FP,FN]=iou_gt(bb2,bb)
+print(TP)
+print(FP)
+print(FN)
+
+
