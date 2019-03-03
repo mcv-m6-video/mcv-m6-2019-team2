@@ -46,9 +46,8 @@ def iou_gt(gt:GroundTruths, detections:GroundTruths, thres=0.1):
 
                 #print(i.iou(j))
 
-            if(max(iou_frame)!=0):
-                if (i.iou(j)>  thres):
-
+            if(max(iou_frame)>0.1):
+                if (max(iou_frame)> thres):
                     TP=TP+1
                 else:
                     FP=FP+1
