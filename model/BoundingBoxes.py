@@ -2,7 +2,7 @@ from typing import Optional
 import numpy as np
 import random
 
-class GroundTruth:
+class BoundingBoxes:
 
     frame_id: int
     top_left: (float, float)
@@ -38,8 +38,8 @@ class GroundTruth:
     def get_area(self):
         return self.width * self.height
 
-    def union(self, other: 'GroundTruth') -> 'GroundTruth':
-        rec = GroundTruth()
+    def union(self, other: 'BoundingBoxes') -> 'BoundingBoxes':
+        rec = BoundingBoxes()
         rec.top_left = (min(self.top_left[0], other.top_left[0]), min(self.top_left[1], other.top_left[1]))
         bottom_right = (max(self.get_bottom_right()[0], other.get_bottom_right()[0]),
                         max(self.get_bottom_right()[1], other.get_bottom_right()[1]))
@@ -49,8 +49,8 @@ class GroundTruth:
 
         return rec
 
-    def intersection(self, other: 'GroundTruth') -> Optional['GroundTruth']:
-        rec = GroundTruth()
+    def intersection(self, other: 'BoundingBoxes') -> Optional['BoundingBoxes']:
+        rec = BoundingBoxes()
         if self.contains_point(other.top_left):
             rec.top_left = other.top_left
             rec.height = (other.top_left[0] - self.get_bottom_right()[0]) + 1

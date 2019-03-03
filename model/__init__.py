@@ -1,2 +1,2 @@
-from .groundtruth import GroundTruth
-from .groundTruths import GroundTruths
+from .BoundingBoxes import BoundingBoxes
+from .BoundingBoxes_Video import BoundingBoxes_Video
