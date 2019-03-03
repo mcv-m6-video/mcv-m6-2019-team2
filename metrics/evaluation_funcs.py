@@ -32,6 +32,7 @@ def iou_gt(gt:GroundTruths, detections:GroundTruths, thres=0.1):
     TP=0
     FP=0
     FN=0
+
     for i in gt.listGd:
         framegt=[]
         for x in detections.listGd:
@@ -39,13 +40,21 @@ def iou_gt(gt:GroundTruths, detections:GroundTruths, thres=0.1):
                framegt.append(x)
 
         if framegt:
+            iou_frame=[]
             for j in framegt:
+                iou_frame.append(i.iou(j))
+
                 #print(i.iou(j))
-                if(i.iou(j)!=0):
-                    if (i.iou(j)> thres):
-                        TP=TP+1
-                    else:
-                        FP=FP+1
+
+            if(max(iou_frame)!=0):
+                if (i.iou(j)>  thres):
+
+                    TP=TP+1
+                else:
+                    FP=FP+1
+            else:
+                FN = FN + 1
+
         else:
             FN=FN+1
 
