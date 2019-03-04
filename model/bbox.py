@@ -67,13 +67,12 @@ class BBox:
         return [self.top_left[0], self.top_left[1], self.get_bottom_right()[0], self.get_bottom_right()[1]]
 
 
-    def modify_gt(self, noise):
+    def modify_bbox(self, noise):
         x=random.uniform(self.top_left[0]-self.top_left[1]*noise, self.top_left[0]+self.top_left[0]*noise)
         y=random.uniform(self.top_left[1]-self.top_left[1]*noise, self.top_left[1]+self.top_left[1]*noise)
         self.top_left=[x,y]
         self.width=random.uniform(self.width-self.width*noise, self.width+self.width*noise)
         self.height=random.uniform(self.height-self.height*noise, self.height+self.height*noise)
-        return
 
     def __str__(self):
         return str(self.top_left) + ', ' + str(self.width) + 'x' + str(self.height)
