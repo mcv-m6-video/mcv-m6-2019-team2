@@ -1,7 +1,7 @@
 import os
 import cv2
-from model import BoundingBoxes_Video
-from model import BoundingBoxes
+from model import video
+from model import bbox
 from metrics import *
 # need to be installed "brew install ffmpeg"
 

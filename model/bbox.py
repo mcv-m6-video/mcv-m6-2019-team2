@@ -2,16 +2,14 @@ from typing import Optional
 import numpy as np
 import random
 
-class BoundingBoxes:
+class BBox:
 
-    frame_id: int
     top_left: (float, float)
     width: float
     height: float
     confidence: float
 
-    def __init__(self,frame_id=0 ,top_left=(0, 0), width=0, height=0, confidence=0):
-        self.frame_id=frame_id
+    def __init__(self,top_left=(0, 0), width=0, height=0, confidence=0):
         self.top_left = top_left
         self.width = width
         self.height = height
@@ -39,7 +37,7 @@ class BoundingBoxes:
         return self.width * self.height
 
     def union(self, other: 'BoundingBoxes') -> 'BoundingBoxes':
-        rec = BoundingBoxes()
+        rec = BBox()
         rec.top_left = (min(self.top_left[0], other.top_left[0]), min(self.top_left[1], other.top_left[1]))
         bottom_right = (max(self.get_bottom_right()[0], other.get_bottom_right()[0]),
                         max(self.get_bottom_right()[1], other.get_bottom_right()[1]))
@@ -50,7 +48,7 @@ class BoundingBoxes:
         return rec
 
     def intersection(self, other: 'BoundingBoxes') -> Optional['BoundingBoxes']:
-        rec = BoundingBoxes()
+        rec = BBox()
         if self.contains_point(other.top_left):
             rec.top_left = other.top_left
             rec.height = (other.top_left[0] - self.get_bottom_right()[0]) + 1

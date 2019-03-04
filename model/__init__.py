@@ -1,2 +1,3 @@
-from .BoundingBoxes import BoundingBoxes
-from .BoundingBoxes_Video import BoundingBoxes_Video
+from .bbox import BBox
+from .video import Video
+from .frame import Frame

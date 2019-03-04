@@ -1,5 +1,5 @@
 import numpy as np
-from model import BoundingBoxes_Video
+from model import video
 from statistics import mean
 
 def performance_evaluation(TP, FN, FP):
@@ -26,7 +26,7 @@ def performance_evaluation(TP, FN, FP):
 
     return [precision, sensitivity, accuracy]
 
-def iou_gt(gt:BoundingBoxes_Video, detections:BoundingBoxes_Video, thres=0.1):
+def iou_gt(gt:video, detections:video, thres=0.1):
     TP = 0
     iou_frames=[]
     for i in gt.listGd:
@@ -38,15 +38,13 @@ def iou_gt(gt:BoundingBoxes_Video, detections:BoundingBoxes_Video, thres=0.1):
             iou_frame=[]
             for j in framegt:
                 iou_frame.append(i.iou(j))
-
-
             iou_frames.append(max(iou_frame))
                 #print(i.iou(j))
             if (max(iou_frame) > thres):
                 TP = TP + 1
     return TP, iou_frames
 
-def iou_TFTN(gt:BoundingBoxes_Video, detections:BoundingBoxes_Video, thres=0.1):
+def iou_TFTN(gt:video, detections:video, thres=0.1):
     TP=0
     FP=0
     FN=0
@@ -59,7 +57,7 @@ def iou_TFTN(gt:BoundingBoxes_Video, detections:BoundingBoxes_Video, thres=0.1):
 
     return TP,FP,FN
 
-def iou_overtime(gt:BoundingBoxes_Video,detections:BoundingBoxes_Video,thres=0.1):
+def iou_overtime(gt:video, detections:video, thres=0.1):
     num_frames=gt.get_num_frames()
     iou_by_frame=[]
     for i in range(0,num_frames):
