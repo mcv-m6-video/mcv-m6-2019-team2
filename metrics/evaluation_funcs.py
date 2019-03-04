@@ -26,27 +26,34 @@ def performance_evaluation(TP, FN, FP):
     accuracy    = float(TP) / float(TP+FN+FP);
 
     return [precision, sensitivity, accuracy]
-
-def iou_video(gt:Video, detections:Video, thres=0.1):
-    TP = 0
-    iou_frame=[]
-    for i in gt.list_frames:
-            frame_detec = detections.get_frame_by_id(i.frame_id)
-
-            TP_fr,ioufrm = iou_frame(i, frame_detec, thres)
-            #TP+=TP_fr
-
-    return TP
-
 def iou_frame(gt_frame:Frame,detections_frames:Frame,thres):
     TP=0
     iouframe=[]
-    for i in gt_frame.bboxes:
-        for j in detections_frames.bboxes:
-            if(i.iou(j)> thres):
+    u=0
+    i=0
+    for u in gt_frame.bboxes:
+        """bboxes=detections_frames.get_bboxes()
+        for i in bboxes:"""
+        for i in detections_frames.bboxes:
+            print(u)
+            print(i)
+            if(u.iou(i)> thres):
                 TP+=1
-                iouframe.append(i.iou(j))
+                iouframe.append(u.iou(i))
     return iouframe, TP
+
+def iou_video(gt:Video, detections:Video, thres=0.1):
+    TP = 0
+    iou_frm=[]
+    for i in gt.list_frames:
+            frame_detec = detections.get_frame_by_id(i.frame_id)
+            #print(frame_detec.bboxes)
+
+            TP_fr, ioufrm = iou_frame(i, frame_detec, thres)
+            for p in TP_fr:
+                TP+=p
+
+    return TP
 
 
 def iou_TFTN_video(gt:Video, detections:Video, thres=0.1):

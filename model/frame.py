@@ -9,11 +9,18 @@ class Frame:
 
 
     frame_id:int
-    bboxes: list
+    bboxes: [BBox]
     def __init__(self,frame_id=0,bboxes=[]):
         self.frame_id=frame_id
-        self.bboxes=[bboxes]
+        self.bboxes=[]
 
+    def get_bboxes(self):
+        u=[]
+        j=0
+        for i in self.bboxes:
+            j=BBox(i)
+            u.append(j)
+        return u
 
     def add_bbox(self,bb:'BBox'):
         self.bboxes.append(bb)

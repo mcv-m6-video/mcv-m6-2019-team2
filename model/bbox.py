@@ -36,7 +36,7 @@ class BBox:
     def get_area(self):
         return self.width * self.height
 
-    def union(self, other: 'BoundingBoxes') -> 'BoundingBoxes':
+    def union(self, other: 'BBox') -> 'BBox':
         rec = BBox()
         rec.top_left = (min(self.top_left[0], other.top_left[0]), min(self.top_left[1], other.top_left[1]))
         bottom_right = (max(self.get_bottom_right()[0], other.get_bottom_right()[0]),
@@ -47,7 +47,7 @@ class BBox:
 
         return rec
 
-    def intersection(self, other: 'BoundingBoxes') -> Optional['BoundingBoxes']:
+    def intersection(self, other: 'BBox') -> Optional['BBox']:
         rec = BBox()
         if self.contains_point(other.top_left):
             rec.top_left = other.top_left
@@ -60,7 +60,7 @@ class BBox:
 
         return rec
 
-    def iou(self, other: 'GroundTruth') -> float:
+    def iou(self, other: 'BBox') -> float:
         return self.intersection(other).get_area() / self.union(other).get_area()
 
     def to_result(self):
