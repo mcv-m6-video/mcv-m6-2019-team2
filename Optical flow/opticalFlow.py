@@ -1,8 +1,6 @@
 import cv2
 import numpy as np
 import glob
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import precision_recall_fscore_support as score
 import math
 
 import configuration as conf
