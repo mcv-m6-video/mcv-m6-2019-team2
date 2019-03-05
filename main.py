@@ -1,12 +1,18 @@
 from Optical_flow import *
+from read_annotation import read_annotations
 
+
+def task0():
+    """After annotate between frames 391-764 we convert cvat xml to ai city challenge format """
+
+    file = 'annotations/AI_CITY_S03_C01_391_764.xml'
+    read_annotations(file)
 
 def task1():
     """Implement IoU and mAP:
     -Add noise to change size and position of bounding boxes
     -Add probability to generate/delete bounding boxes
     +Analysis & Evaluation"""
-
 
 def task2():
     """Temporal analysis: IOU overtime """
@@ -37,7 +43,8 @@ def task4():
 
 
 if __name__ == '__main__':
+    task0()
     task1()
     task2()
-    task3(157)
+    task3(157) # 45 or 157
     task4()

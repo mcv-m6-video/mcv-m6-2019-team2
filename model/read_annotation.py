@@ -51,6 +51,7 @@ def read_annotations(file):
     return annotations
 
 
-file = "/Users/quim/Desktop/AI_CITY_S03_C01_391_764.xml"
-
+"""
+file = '/Users/quim/Desktop/untitled1/annotations/AI_CITY_S03_C01_391_764.xml'
 read_annotations(file)
+"""
