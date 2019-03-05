@@ -24,12 +24,12 @@ dir_gt='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c01
 
 #getgroundTruth(dir_gt)
 
-vid=Video().getgroundTruth(dir_gt)
-video=Video(Video().getgroundTruth(dir_gt))
+vid=Video().getgroundTruth(dir_gt,3)
+video=Video(Video().getgroundTruth(dir_gt,3))
 video.modify_random_bboxes(0.2)
 
 video.eliminate_random_bboxes(0.4)
-vido=Video(Video().getgroundTruth(dir_gt))
+vido=Video(Video().getgroundTruth(dir_gt,3))
 #print(len(bb2.listGd))
 
 
@@ -55,7 +55,8 @@ for i in range(video.get_num_frames()):
     for j in range(len(video.list_frames[i].bboxes)):
         pred_bb.append(video.list_frames[i].bboxes[j].to_result())
         pred_conf.append(video.list_frames[i].bboxes[j].get_condidence())
-        gt_bb.append(video.list_frames[i].bboxes[j].to_result())
+    for j in range(len(vido.list_frames[i].bboxes)):
+        gt_bb.append(vido.list_frames[i].bboxes[j].to_result())
     frames.append([pred_bb, pred_classes, pred_conf, gt_bb, gt_classes])
     pred_bb = []
     pred_classes = []
