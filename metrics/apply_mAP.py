@@ -24,12 +24,12 @@ dir_gt='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c01
 
 #getgroundTruth(dir_gt)
 
-vid=Video().getgroundTruth(dir_gt,10)
-video=Video(Video().getgroundTruth(dir_gt,10))
-video.modify_random_bboxes(0.9)
+vid=Video().getgroundTruth(dir_gt,20)
+video=Video(Video().getgroundTruth(dir_gt,20))
+video.modify_random_bboxes(0.2)
 
 video.eliminate_random_bboxes(0.4)
-vido=Video(Video().getgroundTruth(dir_gt,10))
+vido=Video(Video().getgroundTruth(dir_gt,20))
 #print(len(bb2.listGd))
 
 
@@ -56,11 +56,11 @@ for i in range(video.get_num_frames()):
         pred_classes.append(1) # all same class
     for j in range(len(vido.list_frames[i].bboxes)):
         gt_bb.append(vido.list_frames[i].bboxes[j].to_result())
-        gt_classes.append(1)
+        gt_classes.append(1) # all same class
 
 #frames = [pred_bb, pred_classes, pred_conf, gt_bb, gt_classes]
 
-n_class = 1
+n_class = 2
 mAP = DetectionMAP(n_class)
 for i in range(video.get_num_frames()):
     #print("Evaluate frame {}".format(i))
@@ -70,7 +70,7 @@ for i in range(video.get_num_frames()):
                  np.array(pred_conf), np.array(gt_bb), np.array(gt_classes))
     
 mean_average_precision = []
-precisions, recalls = mAP.compute_precision_recall_(0) # Class index
+precisions, recalls = mAP.compute_precision_recall_(1) # Class index
 average_precision = mAP.compute_ap(precisions, recalls)
 mean_average_precision.append(average_precision)
 
