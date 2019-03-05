@@ -81,18 +81,19 @@ def task2():
     """Temporal analysis: IOU overtime """
     gt_dir = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/annotation.txt'
     yolo = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
+    ssd='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_ssd512.txt'
+    rcnn='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_mask_rcnn.txt'
     gt_video = Video(Video().getgroundTruthown(gt_dir,391))
     gt_video_modif1=Video(Video().getgroundTruthown(gt_dir, 391))
-    gt_video_modif2=Video(Video().getgroundTruthown(gt_dir, 391 ))
+    gt_video_modif2=Video(Video().getgroundTruthown(gt_dir, 391))
 
     # First modification:
     # modify randomnly the bounding boxes by 1%
-    gt_video_modif1.modify_random_bboxes(0.05)
+    gt_video_modif1.modify_random_bboxes(0.1)
 
-
+    # iou-gt
     iou_by_frame=iou_overtime(gt_video,gt_video_modif1, thres = 0.5)
-    TP2, FP2, FN2 = iou_TFTN_video(gt_video, gt_video_modif1,thres=0.5)
-    [precision2, sensitivity2, accuracy2] = performance_evaluation(TP2, FN2, FP2)
+
 
     num_frames=len(iou_by_frame)
     plt.plot(iou_by_frame)
@@ -104,9 +105,46 @@ def task2():
     axes.set_xlim(0,num_frames)
     plt.show()
 
+    # iou_overtime -yolo
+    yolo_video = Video(Video().getgroundTruthown(yolo, 391))
+    iou_by_frame_yolo = iou_overtime(gt_video,yolo_video,thres=0.8)
+    num_framesyolo=len(iou_by_frame_yolo)
+    plt.plot(iou_by_frame_yolo)
+    plt.ylabel('IOU')
+    plt.xlabel('Frames')
+    plt.title('IOU-overtime:YOLO')
+    axes=plt.gca()
+    axes.set_ylim(0,1)
+    axes.set_xlim(0,num_framesyolo)
+    plt.show()
 
+    # iou_overtime -ssd
+    ssd_video = Video(Video().getgroundTruthown(ssd, 391))
+    #eliminate some frames detections
+    #yolo_video.modify_random_bboxes(0.05)
+    iou_by_frame_ssd = iou_overtime(yolo_video,ssd_video,thres=0.5)
+    num_framesssd=len(iou_by_frame_ssd)
+    plt.plot(iou_by_frame_yolo)
+    plt.ylabel('IOU')
+    plt.xlabel('Frames')
+    plt.title('IOU-overtime:SSD')
+    axes=plt.gca()
+    axes.set_ylim(0,1)
+    axes.set_xlim(0,num_framesssd)
+    plt.show()
 
-
+    # iou_overtime -rccn
+    rcnn_video = Video(Video().getgroundTruthown(rcnn, 391))
+    iou_by_frame_rcnn = iou_overtime(rcnn_video,gt_video, thres=0.5)
+    num_framesrcnn=len(iou_by_frame_rcnn)
+    plt.plot(iou_by_frame_rcnn)
+    plt.ylabel('IOU')
+    plt.xlabel('Frames')
+    plt.title('IOU-overtime:RCNN')
+    axes=plt.gca()
+    axes.set_ylim(0,1)
+    axes.set_xlim(0,num_framesrcnn)
+    plt.show()
 
 def task3(seq):
     """Optical flow: Numerical result for MSEN and PEPN, histogram error and error visualization"""
