@@ -43,11 +43,14 @@ def read_annotations(file):
 
     annot = np.column_stack((frame, id, xt, yt, width, heigth, conf, id, id, id))
 
-    np.savetxt('annot', annot, delimiter=',', fmt='% 4d')
+    ind = np.argsort(annot[:, 0])
+    annotations = annot[ind]
 
-    return annot
+    np.savetxt('annotation', annotations, delimiter=',', fmt='% 4d')
+
+    return annotations
 
 
-file = "/Users/quim/Desktop/untitled/annotations/AI_CITY_S03_C01_391_764.xml"
+file = "/Users/quim/Desktop/AI_CITY_S03_C01_391_764.xml"
 
 read_annotations(file)
