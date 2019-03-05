@@ -26,7 +26,7 @@ dir_gt='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c01
 
 vid=Video().getgroundTruth(dir_gt,10)
 video=Video(Video().getgroundTruth(dir_gt,10))
-video.modify_random_bboxes(0.2)
+video.modify_random_bboxes(0.9)
 
 video.eliminate_random_bboxes(0.4)
 vido=Video(Video().getgroundTruth(dir_gt,10))
@@ -64,13 +64,22 @@ n_class = 1
 mAP = DetectionMAP(n_class)
 for i in range(video.get_num_frames()):
     #print("Evaluate frame {}".format(i))
-    show_frame(np.array(pred_bb), np.array(pred_classes),
-               np.array(pred_conf), np.array(gt_bb), np.array(gt_classes))
+    #show_frame(np.array(pred_bb), np.array(pred_classes),
+    #          np.array(pred_conf), np.array(gt_bb), np.array(gt_classes))
     mAP.evaluate(np.array(pred_bb), np.array(pred_classes),
                  np.array(pred_conf), np.array(gt_bb), np.array(gt_classes))
+    
+mean_average_precision = []
+precisions, recalls = mAP.compute_precision_recall_(0) # Class index
+average_precision = mAP.compute_ap(precisions, recalls)
+mean_average_precision.append(average_precision)
 
-mAP.plot()
-plt.show()
+#plt.suptitle("Mean average precision : {:0.2f}".format(sum(mean_average_precision)/len(mean_average_precision)))
+
+
+
+#mAP.plot()
+#plt.show()
 
 #n_class = 1
 #mAP = DetectionMAP(n_class)
