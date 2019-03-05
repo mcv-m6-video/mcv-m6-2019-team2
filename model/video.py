@@ -12,12 +12,13 @@ class Video:
         self.list_frames=list_frames
 
     @staticmethod
-    def getgroundTruth(directory_txt):
+    def getgroundTruth(directory_txt,num_frames):
         """Read txt files containing bounding boxes (ground truth and detections)."""
         # Read GT detections from txt file
         # Each value of each line is  "frame_id, x, y, width, height,confidence" respectively
         vid_fr=[]
-        frameid_saved = -1
+        frameid_saved = 1
+        Boxes_list = []
         txt_gt = open(directory_txt, "r")
         for line in txt_gt:
             splitLine = line.split(",")
@@ -26,14 +27,13 @@ class Video:
             width = float(splitLine[4])
             height = float(splitLine[5])
             confidence = float(splitLine[6])
-            if (frameid != frameid_saved):
-                vid_fr.append(Frame(frameid, BBox(topleft, width, height, confidence)))
-            else:
-                for i in vid_fr:
-                    if (i.frame_id == frameid):
-                        i.add_bbox(BBox(topleft, width, height, confidence))
+            Boxes_list.append(BBox(frameid,topleft ,width, height, confidence))
 
-            frameid_saved = frameid
+        for i in range(0, num_frames):
+            items = [item for item in Boxes_list if item.frame_id ==i]
+            if items:
+                vid_fr.append(Frame(i,items))
+
         txt_gt.close()
         return vid_fr
 
@@ -60,16 +60,27 @@ class Video:
         return num_frames
 
     def get_frame_by_id(self, id):
-        frame_r = Frame(frame_id=id, )
+        index = []
+        frame_r=Frame()
+        j = 0
+        for i in self.list_frames:
+
+            if i.frame_id == id:
+                frame_r = Frame(i.frame_id, i.bboxes)
+
+
+        return frame_r
+    def get_frame_by_id(self, id):
+        frame_r = Frame()
         index = []
         j = 0
         for i in self.list_frames:
             j += 1
             if i.frame_id == id:
-                frame_r.add_bbox(i)
+                frame_r=Frame(i.frame_id,i.bboxes)
         return frame_r
     def get_detections_all(self):
-        listbbox = Video()
+        listbbox = []
         index = []
         j = 0
         for i in self.list_frames:

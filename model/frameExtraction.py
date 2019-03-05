@@ -16,19 +16,24 @@ dir_gt='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c01
 
 
 
-vid=Video().getgroundTruth(dir_gt)
-video=Video(Video().getgroundTruth(dir_gt))
+
+video=Video(Video().getgroundTruth(dir_gt,2141))
 print('hola')
 video.modify_random_bboxes(0.2)
 
 video.eliminate_random_bboxes(0.4)
-vido=Video(Video().getgroundTruth(dir_gt))
+vido=Video(Video().getgroundTruth(dir_gt,2141))
 print('hola')
 
 
 
 TP,FP,FN =iou_TFTN_video(vido,video)
 [precision, sensitivity, accuracy]= performance_evaluation(TP, FN, FP)
+
+
+iou_overtime(vido,video, thres=0.1)
+
+
 print(TP)
 print(FP)
 print(FN)

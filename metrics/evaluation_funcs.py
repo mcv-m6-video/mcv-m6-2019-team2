@@ -35,8 +35,8 @@ def iou_frame(gt_frame:Frame,detections_frames:Frame,thres):
         """bboxes=detections_frames.get_bboxes()
         for i in bboxes:"""
         for i in detections_frames.bboxes:
-            print(u)
-            print(i)
+            #print(u)
+            #print(i)
             if(u.iou(i)> thres):
                 TP+=1
                 iouframe.append(u.iou(i))
@@ -49,9 +49,8 @@ def iou_video(gt:Video, detections:Video, thres=0.1):
             frame_detec = detections.get_frame_by_id(i.frame_id)
             #print(frame_detec.bboxes)
 
-            TP_fr, ioufrm = iou_frame(i, frame_detec, thres)
-            for p in TP_fr:
-                TP+=p
+            ioufrm,TP_fr = iou_frame(i, frame_detec, thres)
+            TP+=TP_fr
 
     return TP
 
@@ -61,7 +60,7 @@ def iou_TFTN_video(gt:Video, detections:Video, thres=0.1):
     FP=0
     FN=0
 
-    TP, iou_frame =iou_video(gt, detections, thres)
+    TP =iou_video(gt, detections, thres)
 
     FP = len(detections.get_detections_all())-TP
 
@@ -72,10 +71,10 @@ def iou_TFTN_video(gt:Video, detections:Video, thres=0.1):
 def iou_overtime(gt:Video, detections:Video, thres=0.1):
     iou_by_frame=[]
     for i in gt.list_frames:
-        TP_fr,iou_frame=iou_frame(i, detections.get_frame_by_id(i.frame_id), thres)
-        if len(iou_frame) > 1:
-            iou_mean = mean(iou_frame)
+        iouframe,TP=iou_frame(i, detections.get_frame_by_id(i.frame_id), thres)
+        if len(iouframe) > 1:
+            iou_mean = mean(iouframe)
         else:
-            iou_mean = iou_frame
+            iou_mean = iouframe
         iou_by_frame.append(iou_mean)
     return iou_by_frame

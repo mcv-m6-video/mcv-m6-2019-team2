@@ -3,13 +3,14 @@ import numpy as np
 import random
 
 class BBox:
-
+    frame_id: int
     top_left: (float, float)
     width: float
     height: float
     confidence: float
 
-    def __init__(self,top_left=(0, 0), width=0, height=0, confidence=0):
+    def __init__(self,frame_id=0,top_left=(0, 0), width=0, height=0, confidence=0):
+        self.frame_id=frame_id
         self.top_left = top_left
         self.width = width
         self.height = height

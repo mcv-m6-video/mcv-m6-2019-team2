@@ -9,10 +9,10 @@ class Frame:
 
 
     frame_id:int
-    bboxes: [BBox]
-    def __init__(self,frame_id=0,bboxes=[]):
+    bboxes:[BBox]
+    def __init__(self, frame_id: object = 0, bboxes: object = []) -> object:
         self.frame_id=frame_id
-        self.bboxes=[]
+        self.bboxes=bboxes
 
     def get_bboxes(self):
         u=[]
@@ -23,8 +23,10 @@ class Frame:
         return u
 
     def add_bbox(self,bb:'BBox'):
-        self.bboxes.append(bb)
+            self.bboxes.append(bb)
 
+    def clear_bbox(self):
+        self.bboxes.clear()
     @staticmethod
     def frame_extraction_ffmpeg(source, frame_folder):
 
