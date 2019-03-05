@@ -106,8 +106,10 @@ def task2():
     plt.show()
 
     # iou_overtime -yolo
+    #eliminate some frames detections
+    #yolo_video.modify_random_bboxes(0.05)
     yolo_video = Video(Video().getgroundTruthown(yolo, 391))
-    iou_by_frame_yolo = iou_overtime(gt_video,yolo_video,thres=0.8)
+    iou_by_frame_yolo = iou_overtime(gt_video,yolo_video,thres=0.5)
     num_framesyolo=len(iou_by_frame_yolo)
     plt.plot(iou_by_frame_yolo)
     plt.ylabel('IOU')
@@ -120,11 +122,9 @@ def task2():
 
     # iou_overtime -ssd
     ssd_video = Video(Video().getgroundTruthown(ssd, 391))
-    #eliminate some frames detections
-    #yolo_video.modify_random_bboxes(0.05)
-    iou_by_frame_ssd = iou_overtime(yolo_video,ssd_video,thres=0.5)
+    iou_by_frame_ssd = iou_overtime(gt_video,ssd_video,thres=0.5)
     num_framesssd=len(iou_by_frame_ssd)
-    plt.plot(iou_by_frame_yolo)
+    plt.plot(iou_by_frame_ssd)
     plt.ylabel('IOU')
     plt.xlabel('Frames')
     plt.title('IOU-overtime:SSD')
@@ -135,7 +135,7 @@ def task2():
 
     # iou_overtime -rccn
     rcnn_video = Video(Video().getgroundTruthown(rcnn, 391))
-    iou_by_frame_rcnn = iou_overtime(rcnn_video,gt_video, thres=0.5)
+    iou_by_frame_rcnn = iou_overtime(gt_video,rcnn_video ,thres=0.5)
     num_framesrcnn=len(iou_by_frame_rcnn)
     plt.plot(iou_by_frame_rcnn)
     plt.ylabel('IOU')

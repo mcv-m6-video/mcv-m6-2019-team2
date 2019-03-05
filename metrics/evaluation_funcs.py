@@ -45,10 +45,13 @@ def iou_frame(detections_frame:Frame,gt_frames:Frame,thres):
             #print(u)
             #print(i)
             ious.append(iou_bbox_2(u ,i))
+
         if(ious):
             if (max(ious) > thres):
                 TP += 1
-                iouframe.append(max(ious))
+            iouframe.append(max(ious))
+        else:
+            iouframe.append(0)
 
     FP = len(detections_frame.bboxes)-TP
 
@@ -98,26 +101,8 @@ def iou_overtime(gt:Video, detections:Video, thres=0.1):
 
         iou_by_frame.append(iou_mean)
 
-
     return iou_by_frame
 
-def iou_map(detec_bbox:BBox,gt_frame:Frame,thres):
-    TP=0
-    FP=0
-    FN=0
-    iouframe=[]
-    u=0
-    i=0
-    for i in gt_frame.bboxes:
-        if(detec_bbox.iou(i)> thres):
-            TP+=1
-            iouframe.append(detec_bbox.iou(i))
-
-    FP=1-TP
-
-    FN = len(gt_frame.bboxes)-TP
-
-    return iouframe, TP,FP,FN
 def iou_bbox_2(bboxA:BBox, bboxB:BBox):
     # compute the intersection over union of two bboxes
 
