@@ -45,10 +45,10 @@ def iou_frame(detections_frame:Frame,gt_frames:Frame,thres):
             #print(u)
             #print(i)
             ious.append(iou_bbox_2(u ,i))
-
-        if (max(ious) > thres):
-            TP += 1
-            iouframe.append(max(ious))
+        if(ious):
+            if (max(ious) > thres):
+                TP += 1
+                iouframe.append(max(ious))
 
     FP = len(detections_frame.bboxes)-TP
 
@@ -86,15 +86,18 @@ def iou_overtime(gt:Video, detections:Video, thres=0.1):
     iou_by_frame=[]
     for i in detections.list_frames:
         iouframe, TP, FP, FN=iou_frame(i, gt.get_frame_by_id(i.frame_id), thres)
+
         if len(iouframe) > 1:
             iou_mean = mean(iouframe)
         else:
             if not iouframe:
                 iou_mean=float(0)
+                iou_by_frame.append(iou_mean)
             else:
-                iou_mean = iouframe
+                iou_mean = iouframe[0]
 
         iou_by_frame.append(iou_mean)
+
 
     return iou_by_frame
 
