@@ -1,3 +1,4 @@
+# https://github.com/MathGaron/mean_average_precision/tree/master/mean_average_precision
 import sys
 sys.path.append('../')
 from metrics.detection_map import DetectionMAP
