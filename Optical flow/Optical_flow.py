@@ -5,6 +5,8 @@ from matplotlib import pyplot as plt
 
 # based on flow development kit of kitti web
 
+
+
 def flow_read(gt_dir, test_dir):
 
     # cv2 imread ---> BGR  need to converted in RGB format
@@ -50,11 +52,21 @@ def msen(F_gt, F_test):
 
     MSEN = np.mean(SEN)
 
+    plt.figure(1)
     plt.hist(E[F_valid_gt == 1], bins=40, density=True)
     plt.title('Optical Flow error')
     plt.xlabel('MSEN')
     plt.ylabel('Number of pixels')
+    plt.savefig('histogram.png')
     plt.show()
+
+
+    plt.figure(2)
+    plt.imshow(np.reshape(E, F_gt.shape[:-1]))
+    plt.colorbar()
+    plt.savefig('error_image.png')
+    plt.show()
+
 
     return MSEN
 
@@ -80,14 +92,7 @@ def pepn(F_gt, F_test,th):
     return PEPN
 
 
-
-
-
-
-
-
 gt_dir1 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000045_10.png"
-
 test_dir1 = '/Users/quim/Desktop/untitled/datasets/kitti/results/LKflow_000045_10.png'
 
 F_gt1, F_test1 = flow_read(gt_dir1,test_dir1)
@@ -99,7 +104,7 @@ print(MSEN1)
 print(PEPN1)
 
 
-
+"""
 gt_dir2 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000157_10.png"
 test_dir2 = '/Users/quim/Desktop/untitled/datasets/kitti/results/LKflow_000157_10.png'
 
@@ -110,10 +115,5 @@ PEPN2 = pepn(F_gt2, F_test2, 3)
 
 print(MSEN2)
 print(PEPN2)
-
-
-
-
-
-
+"""
 
