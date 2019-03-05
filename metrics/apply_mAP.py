@@ -24,12 +24,12 @@ dir_gt='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c01
 
 #getgroundTruth(dir_gt)
 
-vid=Video().getgroundTruth(dir_gt,3)
-video=Video(Video().getgroundTruth(dir_gt,3))
+vid=Video().getgroundTruth(dir_gt,10)
+video=Video(Video().getgroundTruth(dir_gt,10))
 video.modify_random_bboxes(0.2)
 
 video.eliminate_random_bboxes(0.4)
-vido=Video(Video().getgroundTruth(dir_gt,3))
+vido=Video(Video().getgroundTruth(dir_gt,10))
 #print(len(bb2.listGd))
 
 
@@ -48,29 +48,26 @@ pred_classes = []
 pred_conf = []
 gt_bb = []
 gt_classes = []
-frames = []
+
 for i in range(video.get_num_frames()):
-    pred_classes.append(1) # all same class
-    gt_classes.append(1)
     for j in range(len(video.list_frames[i].bboxes)):
         pred_bb.append(video.list_frames[i].bboxes[j].to_result())
         pred_conf.append(video.list_frames[i].bboxes[j].get_condidence())
+        pred_classes.append(1) # all same class
     for j in range(len(vido.list_frames[i].bboxes)):
         gt_bb.append(vido.list_frames[i].bboxes[j].to_result())
-    frames.append([pred_bb, pred_classes, pred_conf, gt_bb, gt_classes])
-    pred_bb = []
-    pred_classes = []
-    pred_conf = []
-    gt_bb = []
-    gt_classes = [] 
+        gt_classes.append(1)
+
 #frames = [pred_bb, pred_classes, pred_conf, gt_bb, gt_classes]
 
 n_class = 1
 mAP = DetectionMAP(n_class)
-for i, frame in enumerate(frames):
-    print("Evaluate frame {}".format(i))
-    show_frame(*frame)
-    mAP.evaluate(*frame)
+for i in range(video.get_num_frames()):
+    #print("Evaluate frame {}".format(i))
+    show_frame(np.array(pred_bb), np.array(pred_classes),
+               np.array(pred_conf), np.array(gt_bb), np.array(gt_classes))
+    mAP.evaluate(np.array(pred_bb), np.array(pred_classes),
+                 np.array(pred_conf), np.array(gt_bb), np.array(gt_classes))
 
 mAP.plot()
 plt.show()
