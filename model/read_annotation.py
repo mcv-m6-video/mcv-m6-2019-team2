@@ -41,12 +41,12 @@ def read_annotations(file):
 
     # Ai city Format [frame, -1, left, top, width, height, conf, -1, -1, -1]
 
-    annot = np.column_stack((frame, id, xt, yt, width, heigth, conf, id, id, id))
+    annot = np.column_stack((frame,id,xt,yt,width,heigth,conf,id,id,id))
 
     ind = np.argsort(annot[:, 0])
     annotations = annot[ind]
 
-    np.savetxt('annotation', annotations, delimiter=',', fmt='% 4d')
+    np.savetxt('annotation', annotations,delimiter=',',fmt='%d')
 
     return annotations
 
