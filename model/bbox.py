@@ -58,7 +58,6 @@ class BBox:
             rec.top_left = self.top_left
             rec.height = (self.top_left[0] - other.get_bottom_right()[0]) + 1
             rec.width = (self.top_left[1] - other.get_bottom_right()[1]) + 1
-
         return rec
 
     def iou(self, other: 'BBox') -> float:

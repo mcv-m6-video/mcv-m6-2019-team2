@@ -1,3 +1,5 @@
+from model import *
+
 def iou_bbox(bboxA, bboxB):
     # compute the intersection over union of two bboxes
 
@@ -21,3 +23,5 @@ def iou_bbox(bboxA, bboxB):
     
     # return the intersection over union value
     return iou
+
+

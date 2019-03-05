@@ -2,6 +2,10 @@ from opticalFlow import Optical_flow
 from model.read_annotation import read_annotations
 from model import *
 from metrics import *
+import matplotlib.pyplot as plt
+
+from opticalFlow.Optical_flow import pepn, msen, flow_read
+
 
 def task0():
     """After annotate between frames 391-764 we convert cvat xml to ai city challenge format """
@@ -15,41 +19,44 @@ def task11():
     -Add probability to generate/delete bounding boxes
     +Analysis & Evaluation"""
     gt_dir='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/annotation.txt'
-    det_dir='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_ssd512.txt'
-    det_dir2 = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
 
     #Apply modifications and eliminate samples of the gt given.
     gt_video = Video(Video().getgroundTruthown(gt_dir,391))
-    print('hola')
-    gt_video_modif1=Video(Video().getgroundTruthown(det_dir2, 391))
-    gt_video_modif2=Video(Video().getgroundTruthown(det_dir, 391 ))
-    print(len(gt_video.get_detections_all()))
-    print(len(gt_video_modif2.get_detections_all()))
-    print(len(gt_video_modif1.get_detections_all()))
-    print('hey')
+    gt_video_modif1=Video(Video().getgroundTruthown(gt_dir, 391))
+    gt_video_modif2=Video(Video().getgroundTruthown(gt_dir, 391 ))
     #Apply modifications and eliminate samples of the gt given
 
     #First modification:
-    # modify randomnly in range of 20% the bounding boxes
-    gt_video_modif1.modify_random_bboxes(0)
-    # eliminate the randomnly 40% of the bounding boxes
-    gt_video_modif1.eliminate_random_bboxes(0)
+    # modify randomnly the bounding boxes by 1%
+    gt_video_modif1.modify_random_bboxes(0.4)
+    # eliminate the randomnly 20% of the bounding boxes
+    gt_video_modif1.eliminate_random_bboxes(0.1)
 
     #Second modification:
-    # modify randomnly in range of 20% the bounding boxes
-    gt_video_modif2.modify_random_bboxes(0)
+    # modify randomnly the bounding boxes by 1%
+    gt_video_modif2.modify_random_bboxes(0.2)
     # eliminate the randomnly 40% of the bounding boxes
-    gt_video_modif2.eliminate_random_bboxes(0)
+    gt_video_modif2.eliminate_random_bboxes(0.7)
 
     #Evaluation
 
     #IOU global
-    TP1, FP1, FN1 = iou_TFTN_video(gt_video, gt_video_modif1,thres=0.05)
+    TP1, FP1, FN1 = iou_TFTN_video(gt_video, gt_video_modif1,thres=0.5)
     [precision1, sensitivity1, accuracy1] = performance_evaluation(TP1, FN1, FP1)
 
-    TP2, FP2, FN2 = iou_TFTN_video(gt_video, gt_video_modif2,thres=0.3)
+    TP2, FP2, FN2 = iou_TFTN_video(gt_video, gt_video_modif2,thres=0.5)
     [precision2, sensitivity2, accuracy2] = performance_evaluation(TP2, FN2, FP2)
-    print('hola')
+
+
+    print("\nFist modification:"
+          "\nPrecision:",precision1,
+          "\nAccuracy:",accuracy1,
+          "\nSensitivity:",sensitivity1)
+
+    print("\nSecond modification:"
+          "\nPrecision:", precision2,
+          "\nAccuracy:", accuracy2,
+          "\nSensitivity:", sensitivity2)
 
 def task12():
     #mAP(mean average)
@@ -72,6 +79,33 @@ def task12():
 
 def task2():
     """Temporal analysis: IOU overtime """
+    gt_dir = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/annotation.txt'
+    yolo = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
+    gt_video = Video(Video().getgroundTruthown(gt_dir,391))
+    gt_video_modif1=Video(Video().getgroundTruthown(gt_dir, 391))
+    gt_video_modif2=Video(Video().getgroundTruthown(gt_dir, 391 ))
+
+    # First modification:
+    # modify randomnly the bounding boxes by 1%
+    gt_video_modif1.modify_random_bboxes(0.05)
+
+
+    iou_by_frame=iou_overtime(gt_video,gt_video_modif1, thres = 0.5)
+    TP2, FP2, FN2 = iou_TFTN_video(gt_video, gt_video_modif1,thres=0.5)
+    [precision2, sensitivity2, accuracy2] = performance_evaluation(TP2, FN2, FP2)
+
+    num_frames=len(iou_by_frame)
+    plt.plot(iou_by_frame)
+    plt.ylabel('IOU')
+    plt.xlabel('Frames')
+    plt.title('IOU-overtime:GT modified')
+    axes=plt.gca()
+    axes.set_ylim(0,1)
+    axes.set_xlim(0,num_frames)
+    plt.show()
+
+
+
 
 
 def task3(seq):
@@ -98,8 +132,9 @@ def task4():
 
 
 if __name__ == '__main__':
-    task0()
-    task11()
-    #task2()
+    #task0()
+    #task11()
+    #task12()
+    task2()
     #task3(157) # 45 or 157
     #task4()

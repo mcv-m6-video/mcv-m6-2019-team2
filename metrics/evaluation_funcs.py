@@ -4,6 +4,7 @@ from model import Frame
 from model import BBox
 from statistics import mean
 
+
 def performance_evaluation(TP, FN, FP):
     """
     performance_evaluation_window()
@@ -43,7 +44,7 @@ def iou_frame(detections_frame:Frame,gt_frames:Frame,thres):
         for i in gt_frames.bboxes:
             #print(u)
             #print(i)
-            ious.append(u.iou(i))
+            ious.append(iou_bbox_2(u ,i))
 
         if (max(ious) > thres):
             TP += 1
@@ -64,8 +65,8 @@ def iou_video(gt:Video, detections:Video, thres=0.1):
 
             ioufrm,TP_fr,FP,FN = iou_frame(i, frame_gt, thres)
             TP+=TP_fr
-
-    return TP
+            iou_frm.append(ioufrm)
+    return TP,iou_frm
 
 
 def iou_TFTN_video(gt:Video, detections:Video, thres=0.1):
@@ -73,7 +74,7 @@ def iou_TFTN_video(gt:Video, detections:Video, thres=0.1):
     FP=0
     FN=0
 
-    TP =iou_video(gt, detections, thres)
+    TP ,iu=iou_video(gt, detections, thres)
 
     FP = len(detections.get_detections_all())-TP
 
@@ -83,13 +84,18 @@ def iou_TFTN_video(gt:Video, detections:Video, thres=0.1):
 
 def iou_overtime(gt:Video, detections:Video, thres=0.1):
     iou_by_frame=[]
-    for i in gt.list_frames:
-        iouframe,TP=iou_frame(i, detections.get_frame_by_id(i.frame_id), thres)
+    for i in detections.list_frames:
+        iouframe, TP, FP, FN=iou_frame(i, gt.get_frame_by_id(i.frame_id), thres)
         if len(iouframe) > 1:
             iou_mean = mean(iouframe)
         else:
-            iou_mean = iouframe
+            if not iouframe:
+                iou_mean=float(0)
+            else:
+                iou_mean = iouframe
+
         iou_by_frame.append(iou_mean)
+
     return iou_by_frame
 
 def iou_map(detec_bbox:BBox,gt_frame:Frame,thres):
@@ -109,7 +115,29 @@ def iou_map(detec_bbox:BBox,gt_frame:Frame,thres):
     FN = len(gt_frame.bboxes)-TP
 
     return iouframe, TP,FP,FN
+def iou_bbox_2(bboxA:BBox, bboxB:BBox):
+    # compute the intersection over union of two bboxes
 
+    # Format of the bboxes is [tly, tlx, bry, brx, ...], where tl and br
+    # indicate top-left and bottom-right corners of the bbox respectively.
+
+    # determine the coordinates of the intersection rectangle
+    xA = max(bboxA.top_left[0], bboxB.top_left[0])
+    yA = max(bboxA.top_left[1], bboxB.top_left[1])
+    xB = min(bboxA.get_bottom_right()[0], bboxB.get_bottom_right()[0])
+    yB = min(bboxA.get_bottom_right()[1], bboxB.get_bottom_right()[1])
+
+    # compute the area of intersection rectangle
+    interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+
+    # compute the area of both bboxes
+    bboxAArea = (bboxA.get_bottom_right()[1] - bboxA.top_left[1] + 1) * (bboxA.get_bottom_right()[0] - bboxA.top_left[0] + 1)
+    bboxBArea = (bboxB.get_bottom_right()[1] - bboxB.top_left[1] + 1) * (bboxB.get_bottom_right()[0] - bboxB.top_left[0] + 1)
+
+    iou = interArea / float(bboxAArea + bboxBArea - interArea)
+
+    # return the intersection over union value
+    return iou
 """def mAP(gt:Video, detections:Video):
     TP = 0
     FP = 0
