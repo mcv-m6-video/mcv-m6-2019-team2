@@ -55,7 +55,7 @@ class Video:
             confidence = float(splitLine[6])
             Boxes_list.append(BBox(frameid, topleft, width, height, confidence))
 
-        for i in range(num_frames,num_frames+ 300):
+        for i in range(num_frames,num_frames+ 372):
             items = [item for item in Boxes_list if item.frame_id == i]
             if items:
                 vid_fr.append(Frame(i, items))

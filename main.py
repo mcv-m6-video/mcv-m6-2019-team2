@@ -19,10 +19,12 @@ def task11():
     det_dir2 = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
 
     #Apply modifications and eliminate samples of the gt given.
-    gt_video = Video(Video().getgroundTruthown(gt_dir,300))
+    gt_video = Video(Video().getgroundTruthown(gt_dir,391))
     print('hola')
-    gt_video_modif1=Video(Video().getgt_detections(det_dir2, 1000))
-    gt_video_modif2=Video(Video().getgt_detections(det_dir, 1000 ))
+    gt_video_modif1=Video(Video().getgroundTruthown(det_dir2, 391))
+    gt_video_modif2=Video(Video().getgroundTruthown(det_dir, 391 ))
+    print(len(gt_video.get_detections_all()))
+    print(len(gt_video_modif2.get_detections_all()))
     print(len(gt_video_modif1.get_detections_all()))
     print('hey')
     #Apply modifications and eliminate samples of the gt given
@@ -42,12 +44,13 @@ def task11():
     #Evaluation
 
     #IOU global
-    TP1, FP1, FN1 = iou_TFTN_video(gt_video, gt_video_modif1)
+    TP1, FP1, FN1 = iou_TFTN_video(gt_video, gt_video_modif1,thres=0.05)
     [precision1, sensitivity1, accuracy1] = performance_evaluation(TP1, FN1, FP1)
 
-    TP2, FP2, FN2 = iou_TFTN_video(gt_video, gt_video_modif2)
+    TP2, FP2, FN2 = iou_TFTN_video(gt_video, gt_video_modif2,thres=0.3)
     [precision2, sensitivity2, accuracy2] = performance_evaluation(TP2, FN2, FP2)
     print('hola')
+
 def task12():
     #mAP(mean average)
     [mAP1,precisions1,recalls1, average_precision1]=app_accumulator(gt_video, gt_video_modif1,0.5)

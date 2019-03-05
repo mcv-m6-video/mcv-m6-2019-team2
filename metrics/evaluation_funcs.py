@@ -27,7 +27,8 @@ def performance_evaluation(TP, FN, FP):
     accuracy    = float(TP) / float(TP+FN+FP);
 
     return [precision, sensitivity, accuracy]
-def iou_frame(gt_frame:Frame,detections_frames:Frame,thres):
+
+def iou_frame(detections_frame:Frame,gt_frames:Frame,thres):
     TP=0
     FP=0
     FN=0
@@ -35,11 +36,11 @@ def iou_frame(gt_frame:Frame,detections_frames:Frame,thres):
     u=0
     i=0
 
-    for u in gt_frame.bboxes:
+    for u in detections_frame.bboxes:
         ious =[]
         """bboxes=detections_frames.get_bboxes()
         for i in bboxes:"""
-        for i in detections_frames.bboxes:
+        for i in gt_frames.bboxes:
             #print(u)
             #print(i)
             ious.append(u.iou(i))
@@ -48,20 +49,20 @@ def iou_frame(gt_frame:Frame,detections_frames:Frame,thres):
             TP += 1
             iouframe.append(max(ious))
 
-    FP = len(detections_frames.bboxes)-TP
+    FP = len(detections_frame.bboxes)-TP
 
-    FN = len(gt_frame.bboxes)-TP
+    FN = len(gt_frames.bboxes)-TP
 
     return iouframe, TP,FP,FN
 
 def iou_video(gt:Video, detections:Video, thres=0.1):
     TP = 0
     iou_frm=[]
-    for i in gt.list_frames:
-            frame_detec = detections.get_frame_by_id(i.frame_id)
+    for i in detections.list_frames:
+            frame_gt = gt.get_frame_by_id(i.frame_id)
             #print(frame_detec.bboxes)
 
-            ioufrm,TP_fr,FP,FN = iou_frame(i, frame_detec, thres)
+            ioufrm,TP_fr,FP,FN = iou_frame(i, frame_gt, thres)
             TP+=TP_fr
 
     return TP
@@ -106,7 +107,6 @@ def iou_map(detec_bbox:BBox,gt_frame:Frame,thres):
     FP=1-TP
 
     FN = len(gt_frame.bboxes)-TP
-
 
     return iouframe, TP,FP,FN
 
