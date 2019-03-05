@@ -64,8 +64,10 @@ def msen(F_gt, F_test):
     plt.figure(2)
     plt.imshow(np.reshape(E, F_gt.shape[:-1]))
     plt.colorbar()
+    plt.tick_params(axis='both', labelbottom=False, labelleft=False)
     plt.savefig('error_image.png')
     plt.show()
+
 
 
     return MSEN
@@ -91,7 +93,7 @@ def pepn(F_gt, F_test,th):
 
     return PEPN
 
-
+"""
 gt_dir1 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000045_10.png"
 test_dir1 = '/Users/quim/Desktop/untitled/datasets/kitti/results/LKflow_000045_10.png'
 
@@ -103,8 +105,6 @@ PEPN1 = pepn(F_gt1, F_test1, 3)
 print(MSEN1)
 print(PEPN1)
 
-
-"""
 gt_dir2 = "/Users/quim/Desktop/untitled/datasets/kitti/groundtruth/000157_10.png"
 test_dir2 = '/Users/quim/Desktop/untitled/datasets/kitti/results/LKflow_000157_10.png'
 
