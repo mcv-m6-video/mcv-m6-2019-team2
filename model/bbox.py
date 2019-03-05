@@ -24,7 +24,7 @@ class BBox:
 
     def get_top_right(self) -> (float, float):
         return self.top_left[0], self.top_left[1] + self.height
-    def get_condidence(self):
+    def get_confidence(self):
         return self.confidence
 
     def get_frame_id(self):

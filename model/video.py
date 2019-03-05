@@ -12,7 +12,7 @@ class Video:
         self.list_frames=list_frames
 
     @staticmethod
-    def getgroundTruth(directory_txt,num_frames):
+    def getgt_detections(directory_txt,num_frames):
         """Read txt files containing bounding boxes (ground truth and detections)."""
         # Read GT detections from txt file
         # Each value of each line is  "frame_id, x, y, width, height,confidence" respectively
@@ -36,6 +36,33 @@ class Video:
 
         txt_gt.close()
         return vid_fr
+
+    @staticmethod
+    def getgroundTruthown(directory_txt, num_frames):
+        """Read txt files containing bounding boxes (ground truth and detections)."""
+        # Read GT detections from txt file
+        # Each value of each line is  "frame_id, x, y, width, height,confidence" respectively
+        vid_fr = []
+        frameid_saved = 1
+        Boxes_list = []
+        txt_gt = open(directory_txt, "r")
+        for line in txt_gt:
+            splitLine = line.split(",")
+            frameid = int(splitLine[0])
+            topleft = [float(splitLine[2]), float(splitLine[3])]
+            width = float(splitLine[4])
+            height = float(splitLine[5])
+            confidence = float(splitLine[6])
+            Boxes_list.append(BBox(frameid, topleft, width, height, confidence))
+
+        for i in range(num_frames,num_frames+ 300):
+            items = [item for item in Boxes_list if item.frame_id == i]
+            if items:
+                vid_fr.append(Frame(i, items))
+
+        txt_gt.close()
+        return vid_fr
+
 
     def modify_random_bboxes(self, prob):
         listbbox = self.list_frames

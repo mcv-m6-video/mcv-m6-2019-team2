@@ -2,8 +2,8 @@
 import numpy as np
 import sys
 sys.path.append('../')
-from mean_average_precision.ap_accumulator import APAccumulator
-from mean_average_precision.utils.bbox import jaccard
+from metrics.ap_accumulator import APAccumulator
+from utils.bbox import jaccard
 import math
 import matplotlib.pyplot as plt
 
@@ -138,25 +138,24 @@ class DetectionMAP:
         ax.set_xlim([0.0, 1.0])
         ax.set_xlabel('Recall')
         ax.set_ylabel('Precision')
-        ax.set_title('cls {0:} : AUC={1:0.2f}'.format(class_index, average_precision))
+        #ax.set_title('cls {0:} : AUC={1:0.2f}'.format(class_index, average_precision))
 
-    def plot(self, interpolated=True):
+    def plot(self,precisions,recalls,average_precision):
         """
         Plot all pr-curves for each classes
         :param interpolated: will compute the interpolated curve
         :return:
         """
-        grid = int(math.ceil(math.sqrt(self.n_class)))
+
+        grid = int(math.ceil(math.sqrt(1)))
         fig, axes = plt.subplots(nrows=grid, ncols=grid)
         mean_average_precision = []
         # TODO: data structure not optimal for this operation...
-        for i, ax in enumerate(axes.flat):
-            if i > self.n_class - 1:
-                break
-            precisions, recalls = self.compute_precision_recall_(i, interpolated)
-            average_precision = self.compute_ap(precisions, recalls)
-            self.plot_pr(ax, i, precisions, recalls, average_precision)
-            mean_average_precision.append(average_precision)
+
+        #precisions, recalls = self.compute_precision_recall_(1, interpolated)
+        #average_precision = self.compute_ap(precisions, recalls)
+        self.plot_pr(axes, 1, precisions,recalls, average_precision)
+        mean_average_precision.append(average_precision)
 
         plt.suptitle("Mean average precision : {:0.2f}".format(sum(mean_average_precision)/len(mean_average_precision)))
         fig.tight_layout()

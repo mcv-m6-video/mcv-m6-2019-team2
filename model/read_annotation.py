@@ -46,7 +46,7 @@ def read_annotations(file):
     ind = np.argsort(annot[:, 0])
     annotations = annot[ind]
 
-    np.savetxt('annotation', annotations,delimiter=',',fmt='%d')
+    np.savetxt('annotation.txt', annotations,delimiter=',',fmt='%d')
 
     return annotations
 

@@ -1,6 +1,7 @@
 import numpy as np
 from model import Video
 from model import Frame
+from model import BBox
 from statistics import mean
 
 def performance_evaluation(TP, FN, FP):
@@ -28,19 +29,30 @@ def performance_evaluation(TP, FN, FP):
     return [precision, sensitivity, accuracy]
 def iou_frame(gt_frame:Frame,detections_frames:Frame,thres):
     TP=0
+    FP=0
+    FN=0
     iouframe=[]
     u=0
     i=0
+
     for u in gt_frame.bboxes:
+        ious =[]
         """bboxes=detections_frames.get_bboxes()
         for i in bboxes:"""
         for i in detections_frames.bboxes:
             #print(u)
             #print(i)
-            if(u.iou(i)> thres):
-                TP+=1
-                iouframe.append(u.iou(i))
-    return iouframe, TP
+            ious.append(u.iou(i))
+
+        if (max(ious) > thres):
+            TP += 1
+            iouframe.append(max(ious))
+
+    FP = len(detections_frames.bboxes)-TP
+
+    FN = len(gt_frame.bboxes)-TP
+
+    return iouframe, TP,FP,FN
 
 def iou_video(gt:Video, detections:Video, thres=0.1):
     TP = 0
@@ -49,7 +61,7 @@ def iou_video(gt:Video, detections:Video, thres=0.1):
             frame_detec = detections.get_frame_by_id(i.frame_id)
             #print(frame_detec.bboxes)
 
-            ioufrm,TP_fr = iou_frame(i, frame_detec, thres)
+            ioufrm,TP_fr,FP,FN = iou_frame(i, frame_detec, thres)
             TP+=TP_fr
 
     return TP
@@ -78,3 +90,56 @@ def iou_overtime(gt:Video, detections:Video, thres=0.1):
             iou_mean = iouframe
         iou_by_frame.append(iou_mean)
     return iou_by_frame
+
+def iou_map(detec_bbox:BBox,gt_frame:Frame,thres):
+    TP=0
+    FP=0
+    FN=0
+    iouframe=[]
+    u=0
+    i=0
+    for i in gt_frame.bboxes:
+        if(detec_bbox.iou(i)> thres):
+            TP+=1
+            iouframe.append(detec_bbox.iou(i))
+
+    FP=1-TP
+
+    FN = len(gt_frame.bboxes)-TP
+
+
+    return iouframe, TP,FP,FN
+
+"""def mAP(gt:Video, detections:Video):
+    TP = 0
+    FP = 0
+    FN = 0
+    # Sort detections by confidence
+    bbox_gt=gt.get_detections_all()
+    bbox_detected=detections.get_detections_all()
+    bbox_detected.sort(key=lambda x: x.confidence, reverse=True)
+    # Save number of groundtruth labels
+    groundtruth_size = len(groundtruth_list)
+    precision = []
+    recall = []
+    threshold=0
+    recall=[for ]
+    step_precision =[]
+    checkpoint = 0
+
+    j=0
+    for i in bbox_detected:
+        # Get groundtruth of the target frame
+        j=+1
+        gtframe=gt.get_frame_by_id(i.get_frame_id())
+        [iouframe, TPbb,FPbb,FN]=iou_map(i,gtframe,0.5)
+
+        TP +=TPbb
+
+        FP +=FPbb
+
+        # Save metrics
+        precision.append(TP/(TP+FP))
+        recall.append(TP/len(bbox_gt))
+
+   """
