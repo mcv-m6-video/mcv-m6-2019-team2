@@ -1,8 +1,7 @@
-from opticalFlow import Optical_flow
+from metrics.apply_mAP_compact import app_accumulator
+from metrics.evaluation_funcs import iou_TFTN_video, performance_evaluation, iou_overtime
 from model.read_annotation import read_annotations
 from model import *
-from metrics import *
-
 import matplotlib.pyplot as plt
 
 from opticalFlow.Optical_flow import pepn, msen, flow_read
@@ -10,7 +9,6 @@ from opticalFlow.Optical_flow import pepn, msen, flow_read
 
 def task0():
     """After annotate between frames 391-764 we convert cvat xml to ai city challenge format """
-
     file = 'annotations/AI_CITY_S03_C01_391_764.xml'
     read_annotations(file)
 
@@ -19,7 +17,7 @@ def task11():
     -Add noise to change size and position of bounding boxes
     -Add probability to generate/delete bounding boxes
     +Analysis & Evaluation"""
-    gt_dir='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/annotation.txt'
+    gt_dir='annotation.txt'
 
     #Apply modifications and eliminate samples of the gt given.
     gt_video = Video(Video().getgroundTruthown(gt_dir,391))
@@ -60,50 +58,37 @@ def task11():
           "\nSensitivity:", sensitivity2)
 
 def task12():
-
-    gt_dir = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/annotation.txt'
-    yolo = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
-    gt_video = Video(Video().getgt_detections(yolo,800))
-    gt_video_modif1=Video(Video().getgt_detections(yolo, 800))
-    gt_video_modif1.modify_random_bboxes(0.1)
-    # eliminate the randomnly 40% of the bounding boxes
-    gt_video_modif1.eliminate_random_bboxes(0.1)
     #mAP(mean average)
+
+    gt_dir = 'annotation.txt'
+    yolo='datasets/train/S03/c010/det/det_yolo3.txt'
+    # Apply modifications and eliminate samples of the gt given.
+    gt_video = Video(Video().getgroundTruthown(gt_dir, 391))
+    gt_video_modif1 = Video(Video().getgroundTruthown(gt_dir, 391))
+
+    gt_video_modif1.modify_random_bboxes(0.4)
+    # eliminate the randomnly 20% of the bounding boxes
+    gt_video_modif1.eliminate_random_bboxes(0.1)
+
     [mAP1,precisions1,recalls1, average_precision1]=app_accumulator(gt_video, gt_video_modif1,0.5)
+    #[mAP2,precisions2,recalls2, average_precision2]=app_accumulator(gt_video, gt_video_modif2,0.5)
     #ax=plt.plot()
     #mAP1.plot_pr(ax, 1, precisions1, recalls1, average_precision1)
 
     mAP1.plot(precisions1, recalls1, average_precision1)
     plt.show()
-
+    #mAP2.plot(precisions2, recalls2, average_precision2)
+    #plt.show()
     #display results
-
-
-
-    #avr=mAP(gt_video, gt_video_modif1)
-    """map=[]
-    list_gt=[]
-    list_detected=[]
-    for i in gt_video.list_frames:
-        for j in i.bboxes:
-            list_gt.append(j.to_result())
-        frame=gt_video_modif1.get_frame_by_id(i.frame_id).bboxes
-        for u in frame:
-            list_detected.append(u.to_result())
-        map.append(mapk(list_gt,list_detected))"""
-
-    print('hola')
-
-
 
 
 def task2():
     """Temporal analysis: IOU overtime """
-    gt_dir = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/annotation.txt'
-    yolo = '/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_yolo3.txt'
-    ssd='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_ssd512.txt'
-    rcnn='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010/det/det_mask_rcnn.txt'
-    gt_video = Video(Video().getgroundTruthown(gt_dir,391))
+    gt_dir = 'annotation.txt'
+    yolo = 'datasets/train/S03/c010/det/det_yolo3.txt'
+    ssd='datasets/train/S03/c010/det/det_ssd512.txt'
+    rcnn='datasets/train/S03/c010/det/det_mask_rcnn.txt'
+    gt_video = Video(Video().getgroundTruthown(gt_dir, 391))
     gt_video_modif1=Video(Video().getgroundTruthown(gt_dir, 391))
     gt_video_modif2=Video(Video().getgroundTruthown(gt_dir, 391))
 
@@ -112,7 +97,7 @@ def task2():
     gt_video_modif1.modify_random_bboxes(0.1)
 
     # iou-gt
-    iou_by_frame=iou_overtime(gt_video,gt_video_modif1, thres = 0.5)
+    iou_by_frame = iou_overtime(gt_video,gt_video_modif1, thres = 0.5)
 
 
     num_frames=len(iou_by_frame)
@@ -123,6 +108,7 @@ def task2():
     axes=plt.gca()
     axes.set_ylim(0,1)
     axes.set_xlim(0,num_frames)
+    plt.savefig('IOU-overtime:GT modified.png')
     plt.show()
 
     # iou_overtime -yolo
@@ -138,6 +124,7 @@ def task2():
     axes=plt.gca()
     axes.set_ylim(0,1)
     axes.set_xlim(0,num_framesyolo)
+    plt.savefig('IOU-overtime:YOLO.png')
     plt.show()
 
     # iou_overtime -ssd
@@ -151,6 +138,7 @@ def task2():
     axes=plt.gca()
     axes.set_ylim(0,1)
     axes.set_xlim(0,num_framesssd)
+    plt.savefig('IOU-overtime:SSD.png')
     plt.show()
 
     # iou_overtime -rccn
@@ -164,6 +152,7 @@ def task2():
     axes=plt.gca()
     axes.set_ylim(0,1)
     axes.set_xlim(0,num_framesrcnn)
+    plt.savefig('IOU-overtime:RCNN.png')
     plt.show()
 
 def task3(seq):
@@ -185,14 +174,13 @@ def task3(seq):
     print(MSEN)
     print(PEPN)
 
-def task4():
-    """optical flow visualization"""
 
 
 if __name__ == '__main__':
+
     #task0()
     #task11()
-    task12()
-    #task2()
+    #task12()
+    task2()
     #task3(157) # 45 or 157
-    #task4()
+
