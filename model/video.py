@@ -55,7 +55,7 @@ class Video:
             confidence = float(splitLine[6])
             Boxes_list.append(BBox(frameid, topleft, width, height, confidence))
 
-        for i in range(num_frames,num_frames+ 20):
+        for i in range(num_frames,num_frames+ 350):
             items = [item for item in Boxes_list if item.frame_id == i]
             if items:
                 vid_fr.append(Frame(i, items))
@@ -95,17 +95,8 @@ class Video:
             if i.frame_id == id:
                 frame_r = Frame(i.frame_id, i.bboxes)
 
+        return frame_r
 
-        return frame_r
-    def get_frame_by_id(self, id):
-        frame_r = Frame()
-        index = []
-        j = 0
-        for i in self.list_frames:
-            j += 1
-            if i.frame_id == id:
-                frame_r=Frame(i.frame_id,i.bboxes)
-        return frame_r
     def get_detections_all(self):
         listbbox = []
         index = []
