@@ -3,7 +3,8 @@ from model import Video
 from model import Frame
 from model import BBox
 from statistics import mean
-
+import matplotlib.pyplot as plt
+from math import ceil
 
 def performance_evaluation(TP, FN, FP):
     """
@@ -126,29 +127,55 @@ def iou_bbox_2(bboxA:BBox, bboxB:BBox):
 
     # return the intersection over union value
     return iou
-"""def mAP(gt:Video, detections:Video):
+
+def iou_map(Bbox_detec:BBox ,gt_frames:Frame,thres):
+    TP=0
+    FP=0
+    FN=0
+    iouframe=[]
+    u=0
+    i=0
+
+    ious =[]
+
+    for i in gt_frames.bboxes:
+            #print(u)
+            #print(i)
+        ious.append(iou_bbox_2(Bbox_detec,i))
+
+        if(ious):
+            if (max(ious) > thres):
+                TP += 1
+                iouframe.append(max(ious))
+        else:
+            iouframe.append(0)
+
+    FP = 1-TP
+
+    return iouframe, TP,FP
+"""
+def mAP(gt:Video, detections:Video):
     TP = 0
     FP = 0
     FN = 0
-    # Sort detections by confidence
+
     bbox_gt=gt.get_detections_all()
     bbox_detected=detections.get_detections_all()
     bbox_detected.sort(key=lambda x: x.confidence, reverse=True)
-    # Save number of groundtruth labels
-    groundtruth_size = len(groundtruth_list)
     precision = []
     recall = []
-    threshold=0
-    recall=[for ]
+    threshold = ceil((1 / len(bbox_detected)) * 10) / 10
+
     step_precision =[]
     checkpoint = 0
 
     j=0
+    u=0
     for i in bbox_detected:
         # Get groundtruth of the target frame
         j=+1
         gtframe=gt.get_frame_by_id(i.get_frame_id())
-        [iouframe, TPbb,FPbb,FN]=iou_map(i,gtframe,0.5)
+        [iouframe,TPbb,FPbb]=iou_map(i,gtframe,0.5)
 
         TP +=TPbb
 
@@ -157,5 +184,41 @@ def iou_bbox_2(bboxA:BBox, bboxB:BBox):
         # Save metrics
         precision.append(TP/(TP+FP))
         recall.append(TP/len(bbox_gt))
+        # Get max precision for each 0.05 step of confidence
+        if recall[-1] > threshold or j == len(bbox_detected) - 1:
+            step_precision.append(max(precision[checkpoint:len(precision) - 2]))
 
-   """
+            checkpoint = len(precision)
+            threshold += 0.1
+        mAP = sum(step_precision) / 11
+        print("mAP: {}\n".format(mAP))
+        plot_precision_recall_curve(precision, recall)
+
+
+def plot_precision_recall_curve(precision, recall):
+
+    # Data for plotting
+    fig, ax = plt.subplots()
+    ax.plot(recall, precision)
+
+    ax.set(xlabel='Recall', ylabel='Precision',
+               title='Precision-Recall Curve')
+    ax.grid()
+
+    fig.savefig("precision-recall.png")
+        # plt.show()
+
+ precisions = np.array(precision)
+    recalls = np.array(recall)
+    prec_at_rec = []
+    for recall_level in np.linspace(0.0, 1.0, 11):
+        try:
+            args = np.argwhere(recalls >= recall_level).flatten()
+            prec = max(precisions[args])
+        except ValueError:
+            prec = 0.0
+        prec_at_rec.append(prec)
+
+    avg_prec = np.mean(prec_at_rec)"""
+
+

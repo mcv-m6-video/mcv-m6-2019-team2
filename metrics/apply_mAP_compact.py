@@ -29,15 +29,15 @@ def app_accumulator(gt_video:Video, detections_video:Video,overlap_threshold, pr
     gt_bb = []
     gt_classes = []
 
-    detections_bboxes=detections_video.get_detections_all()
-    gt_bboxes=gt_video.get_detections_all()
-    for i in detections_bboxes:
-        pred_bb.append(i.to_result())
-        pred_conf.append(i.get_confidence())
-        pred_classes.append(1) # all same class
-    for j in gt_bboxes:
-        gt_bb.append(j.to_result())
-        gt_classes.append(1) # all same class
+
+    for i in range(detections_video.get_num_frames()):
+        for j in range(len(detections_video.list_frames[i].bboxes)):
+            pred_bb.append(detections_video.list_frames[i].bboxes[j].to_result())
+            pred_conf.append(detections_video.list_frames[i].bboxes[j].get_confidence())
+            pred_classes.append(1)  # all same class
+        for j in range(len(gt_video.list_frames[i].bboxes)):
+            gt_bb.append(gt_video.list_frames[i].bboxes[j].to_result())
+            gt_classes.append(1)  # all same class
 
     n_class = 2
     mAP = DetectionMAP(n_class, pr_samples, overlap_threshold )
