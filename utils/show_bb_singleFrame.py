@@ -5,6 +5,7 @@ from matplotlib import patches
 import cv2
 from PIL import Image
 import numpy as np
+from metrics import *
 
 def show_bboxes(path, bboxes: Frame, bboxes_noisy: Frame):
     """
@@ -22,14 +23,19 @@ def show_bboxes(path, bboxes: Frame, bboxes_noisy: Frame):
 
     # Display the image
     ax.imshow(im)
-
+    iouframe, TP, FP, FN= iou_frame(bboxes, bboxes_noisy, thres=0.1)
     # Create a Rectangle patch
+    i=0
     for bbox in bboxes.bboxes:
 
         rect = patches.Rectangle((bbox.top_left),
                                  bbox.width , bbox.height ,
                              linewidth=1, edgecolor='g', facecolor='none')
+
+
         ax.add_patch(rect)
+
+
 
     for bbox_noisy in bboxes_noisy.bboxes:
         bb = bbox_noisy.to_result()
@@ -37,7 +43,14 @@ def show_bboxes(path, bboxes: Frame, bboxes_noisy: Frame):
                                  bbox_noisy.width , bbox_noisy.height,
                              linewidth=1, edgecolor='r', facecolor='none')
 
+
         ax.add_patch(rect)
+
+
+        i+=1
+
+
+
     # Add the patch to the Axes
 
 
@@ -58,4 +71,8 @@ gt_video_modif1.modify_random_bboxes(0.2)
 detections_bboxes = gt_video_modif1.get_frame_by_id(391)
 gt_bboxes = gt_video.get_frame_by_id(391)
 
+iouframe, TP,FP,FN=iou_frame(gt_bboxes, detections_bboxes, thres=0.7)
+
+for i in iouframe:
+    print('\n IOU:',i)
 show_bboxes(path,gt_bboxes,detections_bboxes)
