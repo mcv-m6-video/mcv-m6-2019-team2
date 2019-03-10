@@ -9,7 +9,8 @@
 - Quim Comas, ,quimcomas
 
 ###  Project Goal
-To learn the basic concepts and techniques related to video sequences mainly for surveillance applications
+To learn the basic concepts and techniques related to video sequences mainly for surveillance applications and can be applied to any problem in order to obtain accurate automatic results.9
+The project is divided into 5 weeks and, this year, is based on The NVIDIA AI CITY Challenge (https://www.aicitychallenge.org/)
 
 ### Poject Schedule
 #### Week 1
