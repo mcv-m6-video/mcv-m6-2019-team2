@@ -59,13 +59,17 @@ class OneGaussianVideo:
         self.mean_train = np.mean(mean_frames)
         self.std_train = np.mean(std_frames)
 
-    def classifyTest(self,alpha):
+    def classifyTest(self,alpha,rho,isAdaptive):
         alpha=1#????
+        rho = 0.5 # Evaluate different vals
         for i in self.test_frames:
             for j in i:
                 if (j+self.mean_train) >= alpha*(self.std_train+2):
                     foreground_pixel=1 #to continue
 
+                if isAdaptive and foreground_pixel == 0: # Only background pixels
+                    self.mean_train = rho * j + (1-rho)*self.mean_train
+                    self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
 
     @staticmethod
     def getgt_detections(directory_txt):
