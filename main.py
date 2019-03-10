@@ -1,7 +1,7 @@
-from model import GaussianVideo
+from model import OneGaussianVideo
 
 if __name__ == '__main__':
-    u=GaussianVideo()
-    u.modelasGaussian()
+    u=OneGaussianVideo()
+    #u.modeltrainGaussian()
 
     print('u')
