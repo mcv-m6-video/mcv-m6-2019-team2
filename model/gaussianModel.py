@@ -12,15 +12,18 @@ class OneGaussianVideo:
     mean_train:float
     std_train:float
 
-    def __init__(self, train_frames=[],test_frames=[],dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010',mean_train=0,std_train=0):
+#    def __init__(self, train_frames=[],test_frames=[],dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010',mean_train=0,std_train=0):
+    def __init__(self, train_frames=[],test_frames=[],dir_path='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c010',mean_train=0,std_train=0):
         self.dir_path=dir_path
         self.train_frames = []
         self.test_frames=[]
+        self.state_art_test_frames=[]
         self.mean_train=0
         self.std_train=0
         self.readVideoBW(self.dir_path)
 
-    def readVideoBW(self,dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010'):
+#    def readVideoBW(self,dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010'):
+    def readVideoBW(self,dir_path='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c010'):
 
         #Frame path
         frame_path=dir_path+'/framess'
@@ -71,6 +74,16 @@ class OneGaussianVideo:
                     self.mean_train = rho * j + (1-rho)*self.mean_train
                     self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
 
+    def state_of_art(self):
+        fgbg = cv2.createBackgroundSubtractorMOG2()
+        for i,frame in self.test_frames:
+            print(i)
+            #bw_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            fgmask = fgbg.apply(frame, learningRate=0.001)
+            #cv2.imshow('frame',fgmask)
+            self.state_art_test_frames.append([i,fgmask])
+
+    
     @staticmethod
     def getgt_detections(directory_txt):
         """Read txt files containing bounding boxes (ground truth and detections)."""
