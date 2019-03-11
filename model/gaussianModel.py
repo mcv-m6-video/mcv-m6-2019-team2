@@ -73,10 +73,10 @@ class OneGaussianVideo:
 #            if isAdaptive and foreground_pixel == 0: # Only background pixels
 #                self.mean_train = rho * j + (1-rho)*self.mean_train
 #                self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
-            self.gaussian_frames.append([i, out_frame])
-            cv2.imshow('',of.astype(np.uint8)*255)
+            self.gaussian_frames.append([i, out_frame.astype(np.uint8)*255])
+            cv2.imshow('',out_frame.astype(np.uint8)*255)
             cv2.waitKey()
-        return out_frame
+        #return out_frame
             
 
     def state_of_art(self):
