@@ -63,16 +63,16 @@ class OneGaussianVideo:
         self.std_train = np.mean(std_frames)
 
     def classifyTest(self,alpha,rho,isAdaptive):
+        out_frame = np.empty(np.shape(self.train_frames))
         alpha=1#????
         rho = 0.5 # Evaluate different vals
-        for i in self.test_frames:
-            for j in i:
-                if (j+self.mean_train) >= alpha*(self.std_train+2):
-                    foreground_pixel=1 #to continue
+        for i, frame in self.test_frames:
+            out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
 
-                if isAdaptive and foreground_pixel == 0: # Only background pixels
-                    self.mean_train = rho * j + (1-rho)*self.mean_train
-                    self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
+#            if isAdaptive and foreground_pixel == 0: # Only background pixels
+#                self.mean_train = rho * j + (1-rho)*self.mean_train
+#                self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
+        return np.array(out_frame, dtype=np.uint8)
 
     def state_of_art(self):
         fgbg = cv2.createBackgroundSubtractorMOG2()
