@@ -38,7 +38,7 @@ class OneGaussianVideo:
 
         j=0
         for i,j in enumerate(frame_list):
-            print(i)
+            print('Reading Frame: ' + str(i))
             if i<= mt.trunc(0.25*num_frames):
                 image_path=frame_path+'/image'+str(i)+'.jpg'
                 im=cv2.imread(image_path,0)
@@ -55,6 +55,7 @@ class OneGaussianVideo:
     #def creategt(self):
 
     def modeltrainGaussian(self):
+        print('Training Gaussian model')
         mean_frames=[]
         std_frames=[]
         for i in self.train_frames:
@@ -64,9 +65,8 @@ class OneGaussianVideo:
         self.std_train = np.mean(std_frames)
 
     def classifyTest(self,alpha,rho,isAdaptive):
+        print('Classifying frames')
         out_frame = np.empty(np.shape(self.train_frames))
-        alpha=0.1#????
-        rho = 0.5 # Evaluate different vals
         for i, frame in self.test_frames:
             out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
 
@@ -74,6 +74,10 @@ class OneGaussianVideo:
 #                self.mean_train = rho * j + (1-rho)*self.mean_train
 #                self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
             self.gaussian_frames.append([i, out_frame])
+            cv2.imshow('',of.astype(np.uint8)*255)
+            cv2.waitKey()
+        return out_frame
+            
 
     def state_of_art(self):
         fgbg = cv2.createBackgroundSubtractorMOG2()
