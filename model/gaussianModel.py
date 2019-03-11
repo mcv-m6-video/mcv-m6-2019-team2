@@ -19,8 +19,6 @@ class OneGaussianVideo:
         self.test_frames=[]
         self.gaussian_frames = []
         self.state_art_test_frames=[]
-        self.mean_train=0
-        self.std_train=0
         self.readVideoBW(self.dir_path)
 
 #    def readVideoBW(self,dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010'):
@@ -38,31 +36,32 @@ class OneGaussianVideo:
 
         j=0
         for i,j in enumerate(frame_list):
-            print('Reading Frame: ' + str(i))
+            #print('Reading Frame: ' + str(i))
             if i<= mt.trunc(0.25*num_frames):
                 image_path=frame_path+'/image'+str(i)+'.jpg'
                 im=cv2.imread(image_path,0)
                 if im is not None:
                     im_v=np.reshape(im,im.shape[0]*im.shape[1])
                     self.train_frames.append([i,im])
+                    print('Reading Training Frame: ' + str(i))
             else:
                 image_path = frame_path + '/image' + str(i) + '.jpg'
                 im = cv2.imread(image_path, 0)
                 if im is not None:
                     im_v = np.reshape(im, im.shape[0] * im.shape[1])
                     self.test_frames.append([i,im])
+                    print('Reading Testing Frame: ' + str(i))
 
     #def creategt(self):
 
     def modeltrainGaussian(self):
         print('Training Gaussian model')
-        mean_frames=[]
-        std_frames=[]
-        for i in self.train_frames:
-            mean_frames.append(np.mean(i))
-            std_frames.append(np.std(i))
-        self.mean_train = np.mean(mean_frames)
-        self.std_train = np.mean(std_frames)
+        t_frames = []
+        for i, frame in self.train_frames:
+            t_frames.append(frame)
+        self.mean_train = np.mean(t_frames).astype(np.uint8)
+        self.std_train = np.std(t_frames)
+
 
     def classifyTest(self,alpha,rho,isAdaptive):
         print('Classifying frames')
@@ -75,7 +74,7 @@ class OneGaussianVideo:
 #                self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
             self.gaussian_frames.append([i, out_frame.astype(np.uint8)*255])
             cv2.imshow('',out_frame.astype(np.uint8)*255)
-            cv2.waitKey()
+            cv2.waitKey(20)
         #return out_frame
             
 
