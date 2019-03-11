@@ -19,38 +19,39 @@ class OneGaussianVideo:
         self.test_frames=[]
         self.gaussian_frames = []
         self.state_art_test_frames=[]
+        self.mean_train = []
+        self.sstd_train = []
         self.readVideoBW(self.dir_path)
 
 #    def readVideoBW(self,dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010'):
     def readVideoBW(self,dir_path='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c010'):
-
         #Frame path
-        frame_path=dir_path+'/framess'
+        frame_path=dir_path+'/framesss'
         #gt path
         gt_path=dir_path+'/gt'
-
         frame_list = sorted(os.listdir(frame_path))
-
         num_frames=len(frame_list)
-
 
         j=0
         for i,j in enumerate(frame_list):
             #print('Reading Frame: ' + str(i))
             if i<= mt.trunc(0.25*num_frames):
                 image_path=frame_path+'/image'+str(i)+'.jpg'
-                im=cv2.imread(image_path,0)
+                im=cv2.imread(image_path,cv2.IMREAD_GRAYSCALE)
                 if im is not None:
-                    im_v=np.reshape(im,im.shape[0]*im.shape[1])
+                    im = cv2.resize(im, (0,0), fx=0.5, fy=0.5) # HALf SIZE
+                    #im_v=np.reshape(im,im.shape[0]*im.shape[1])
                     self.train_frames.append([i,im])
                     print('Reading Training Frame: ' + str(i))
             else:
                 image_path = frame_path + '/image' + str(i) + '.jpg'
-                im = cv2.imread(image_path, 0)
+                im = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
                 if im is not None:
-                    im_v = np.reshape(im, im.shape[0] * im.shape[1])
+                    im = cv2.resize(im, (0,0), fx=0.5, fy=0.5) # HALf SIZE
+                    #im_v = np.reshape(im, im.shape[0] * im.shape[1])
                     self.test_frames.append([i,im])
                     print('Reading Testing Frame: ' + str(i))
+
 
     #def creategt(self):
 
@@ -59,34 +60,41 @@ class OneGaussianVideo:
         t_frames = []
         for i, frame in self.train_frames:
             t_frames.append(frame)
-        self.mean_train = np.mean(t_frames).astype(np.uint8)
-        self.std_train = np.std(t_frames)
+        self.mean_train = np.mean(t_frames,0).astype(np.uint8)
+        self.std_train = np.std(t_frames,0).astype(np.uint8)
+        cv2.imshow('',self.mean_train)
+        cv2.waitKey(20)
+        return self.mean_train
 
 
     def classifyTest(self,alpha,rho,isAdaptive):
         print('Classifying frames')
-        out_frame = np.empty(np.shape(self.train_frames))
+        out_frame =[]#np.empty(np.shape(self.train_frames))
         for i, frame in self.test_frames:
+            if isAdaptive: # Only background pixels
+                background_px = frame < 0.5
+                self.mean_train = rho * background_px + (1-rho)*self.mean_train
+                self.std_train = rho * (background_px - self.mean_train)**2 + (1 - rho) * self.std_train
             out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
-
-#            if isAdaptive and foreground_pixel == 0: # Only background pixels
-#                self.mean_train = rho * j + (1-rho)*self.mean_train
-#                self.std_train = rho * (j - self.mean_train)**2 + (1 - rho) * self.std_train
-            self.gaussian_frames.append([i, out_frame.astype(np.uint8)*255])
-            cv2.imshow('',out_frame.astype(np.uint8)*255)
-            cv2.waitKey(20)
-        #return out_frame
+        
+            self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
+            cv2.imshow('',self.mean_train)
+            #cv2.imshow('',out_frame.astype(np.uint8)*255)
+            cv2.waitKey(200)
+        return out_frame
             
 
     def state_of_art(self):
         fgbg = cv2.createBackgroundSubtractorMOG2()
         for i,frame in self.test_frames:
-            print(i)
+            print('frame: '+str(i))
             #bw_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            fgmask = fgbg.apply(frame, learningRate=0.001)
+            fgmask = fgbg.apply(frame, learningRate=0.0001)
             #cv2.imshow('frame',fgmask)
             self.state_art_test_frames.append([i,fgmask])
-
+            cv2.imshow('',fgmask.astype(np.uint8))
+            cv2.waitKey(20)
+        return fgmask
     
     @staticmethod
     def getgt_detections(directory_txt):
