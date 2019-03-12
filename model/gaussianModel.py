@@ -12,7 +12,6 @@ class OneGaussianVideo:
     mean_train:float
     std_train:float
 
-#    def __init__(self, train_frames=[],test_frames=[],dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010',mean_train=0,std_train=0):
     def __init__(self, train_frames=[],test_frames=[],dir_path='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c010',mean_train=0,std_train=0):
         self.dir_path=dir_path
         self.train_frames = []
@@ -23,10 +22,9 @@ class OneGaussianVideo:
         self.sstd_train = []
         self.readVideoBW(self.dir_path)
 
-#    def readVideoBW(self,dir_path='/Users/claudiabacaperez/Desktop/mcv-m6-2019-team2/datasets/train/S03/c010'):
     def readVideoBW(self,dir_path='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c010'):
         #Frame path
-        frame_path=dir_path+'/framesss'
+        frame_path=dir_path+'/framesss' # /frames -> For the full data
         #gt path
         gt_path=dir_path+'/gt'
         frame_list = sorted(os.listdir(frame_path))
@@ -35,19 +33,19 @@ class OneGaussianVideo:
         j=0
         for i,j in enumerate(frame_list):
             #print('Reading Frame: ' + str(i))
-            if i<= mt.trunc(0.25*num_frames):
+            if i<= mt.trunc(0.25*num_frames): # 25% frames for training, 75% for testing
                 image_path=frame_path+'/image'+str(i)+'.jpg'
-                im=cv2.imread(image_path,cv2.IMREAD_GRAYSCALE)
+                im=cv2.imread(image_path,cv2.IMREAD_GRAYSCALE) # Grayscale only
                 if im is not None:
-                    im = cv2.resize(im, (0,0), fx=0.3, fy=0.3) # HALf SIZE
+                    im = cv2.resize(im, (0,0), fx=0.3, fy=0.3) # Make images smaller
                     #im_v=np.reshape(im,im.shape[0]*im.shape[1])
                     self.train_frames.append([i,im])
                     print('Reading Training Frame: ' + str(i))
             else:
                 image_path = frame_path + '/image' + str(i) + '.jpg'
-                im = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+                im = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE) # Grayscale only
                 if im is not None:
-                    im = cv2.resize(im, (0,0), fx=0.3, fy=0.3) # HALf SIZE
+                    im = cv2.resize(im, (0,0), fx=0.3, fy=0.3) # # Make images smaller
                     #im_v = np.reshape(im, im.shape[0] * im.shape[1])
                     self.test_frames.append([i,im])
                     print('Reading Testing Frame: ' + str(i))
@@ -56,67 +54,53 @@ class OneGaussianVideo:
     #def creategt(self):
 
     def modeltrainGaussian(self):
+        # Get the mean and std of training frames, used for background substraction
         print('Training Gaussian model')
         t_frames = []
         for i, frame in self.train_frames:
             t_frames.append(frame)
-        self.mean_train = np.mean(t_frames,0).astype(np.uint8)
+        self.mean_train = np.mean(t_frames,0).astype(np.uint8) 
         self.std_train = np.std(t_frames,0).astype(np.uint8)
 #        cv2.imshow('',self.mean_train)
 #        cv2.waitKey(20)
-        return self.mean_train
+
 
     def classifyTest(self,alpha,rho,isAdaptive):
         print('Classifying frames')
-        out_frame =np.empty(np.shape(self.train_frames))
+        out_frame =np.empty(np.shape(self.train_frames)) # Initialize empty frame
         for i, frame in self.test_frames:
-            if isAdaptive: # Only background pixels
-                background = frame != 255
+            if isAdaptive: 
+                background = frame != 255 # Only background pixels
+                #Equations from the slides [Adaptive Modelling]
                 self.mean_train[background] = rho * frame[background] + (1-rho)*self.mean_train[background]
                 self.std_train[background] = np.sqrt(rho * (frame[background]- self.mean_train[background])**2 + (1 - rho) * (self.std_train[background]**2))
                 out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
-                # Clean image with morphological operators
-                kernel = np.ones((3,3), np.uint8) 
-                out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_OPEN, kernel)
-                out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_CLOSE, kernel)
-                
             else:
+                #Equations from the slides [Gaussian Modelling]
                 out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
-                self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
+            # Clean image with morphological operators (noisy areas, and holes)
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2,2))
+            out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_OPEN, kernel)
+            out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_CLOSE, kernel)
+            self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
             #cv2.imshow('',self.mean_train)
             cv2.imshow('',out_frame.astype(np.uint8)*255)
             cv2.waitKey(20)
-            ff = frame
-        return ff
-
-#    def classifyTest(self,alpha,rho,isAdaptive):
-#        print('Classifying frames')
-#        out_frame =np.empty(np.shape(self.train_frames))
-#        for i, frame in self.test_frames:
-#            if isAdaptive: # Only background pixels
-#                self.mean_train = rho * (frame==0) + (1-rho)*self.mean_train
-#                self.std_train = np.sqrt(rho * ((frame==0) - self.mean_train)**2 + (1 - rho) * (self.std_train**2))
-#                out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
-#            else:
-#                out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
-#            self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
-#            #cv2.imshow('',self.mean_train)
-#            cv2.imshow('',out_frame.astype(np.uint8)*255)
-#            cv2.waitKey(20)
-#        return out_frame
-            
+       
 
     def state_of_art(self):
-        fgbg = cv2.createBackgroundSubtractorMOG2()
+        print('State of the art')
+        #Source: https://docs.opencv.org/3.3.0/db/d5c/tutorial_py_bg_subtraction.html
+        fgbg = cv2.bgsegm.createBackgroundSubtractorMOG() 
         for i,frame in self.test_frames:
-            print('frame: '+str(i))
+            #print('frame: '+str(i))
             #bw_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            fgmask = fgbg.apply(frame, learningRate=0.0001)
+            fgmask = fgbg.apply(frame, learningRate=0.01)
             #cv2.imshow('frame',fgmask)
             self.state_art_test_frames.append([i,fgmask])
             cv2.imshow('',fgmask.astype(np.uint8))
             cv2.waitKey(20)
-        return fgmask
+
     
     @staticmethod
     def getgt_detections(directory_txt):
@@ -136,7 +120,8 @@ class OneGaussianVideo:
 
         return boxes_gt
 
-    def creategt(self,frames):
+    def creategt(self,frames): 
+        # Not using it 
         gt_dir=self.dir_path+'/gt'
         boxes_gt=self.getgt_detections(gt_dir)
         box_frame=[]
@@ -146,8 +131,6 @@ class OneGaussianVideo:
             for u in boxes_gt:
                 if u.frame_id==i[0]:
                     box_frame[i].append(u)
-
-
         for i in frames:
             for u in box_frame[i]:
                 [xmin, ymin, xmax, ymax]=u.to_result()
