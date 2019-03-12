@@ -65,7 +65,7 @@ class OneGaussianVideo:
 #        cv2.waitKey(20)
 
 
-    def classifyTest(self,alpha,rho,isAdaptive):
+    def classifyTest(self,alpha,rho,isAdaptive,showVideo):
         print('Classifying frames')
         out_frame =np.empty(np.shape(self.train_frames)) # Initialize empty frame
         for i, frame in self.test_frames:
@@ -83,9 +83,9 @@ class OneGaussianVideo:
             out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_OPEN, kernel)
             out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_CLOSE, kernel)
             self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
-            #cv2.imshow('',self.mean_train)
-            cv2.imshow('',out_frame.astype(np.uint8)*255)
-            cv2.waitKey(20)
+            if showVideo == True:
+                cv2.imshow('',out_frame.astype(np.uint8)*255)
+                cv2.waitKey(20)
        
 
     def state_of_art(self):
