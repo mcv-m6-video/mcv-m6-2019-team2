@@ -39,7 +39,7 @@ class OneGaussianVideo:
                 image_path=frame_path+'/image'+str(i)+'.jpg'
                 im=cv2.imread(image_path,cv2.IMREAD_GRAYSCALE)
                 if im is not None:
-                    im = cv2.resize(im, (0,0), fx=0.5, fy=0.5) # HALf SIZE
+                    im = cv2.resize(im, (0,0), fx=0.3, fy=0.3) # HALf SIZE
                     #im_v=np.reshape(im,im.shape[0]*im.shape[1])
                     self.train_frames.append([i,im])
                     print('Reading Training Frame: ' + str(i))
@@ -47,7 +47,7 @@ class OneGaussianVideo:
                 image_path = frame_path + '/image' + str(i) + '.jpg'
                 im = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
                 if im is not None:
-                    im = cv2.resize(im, (0,0), fx=0.5, fy=0.5) # HALf SIZE
+                    im = cv2.resize(im, (0,0), fx=0.3, fy=0.3) # HALf SIZE
                     #im_v = np.reshape(im, im.shape[0] * im.shape[1])
                     self.test_frames.append([i,im])
                     print('Reading Testing Frame: ' + str(i))
@@ -62,26 +62,48 @@ class OneGaussianVideo:
             t_frames.append(frame)
         self.mean_train = np.mean(t_frames,0).astype(np.uint8)
         self.std_train = np.std(t_frames,0).astype(np.uint8)
-        cv2.imshow('',self.mean_train)
-        cv2.waitKey(20)
+#        cv2.imshow('',self.mean_train)
+#        cv2.waitKey(20)
         return self.mean_train
-
 
     def classifyTest(self,alpha,rho,isAdaptive):
         print('Classifying frames')
-        out_frame =[]#np.empty(np.shape(self.train_frames))
+        out_frame =np.empty(np.shape(self.train_frames))
         for i, frame in self.test_frames:
             if isAdaptive: # Only background pixels
-                background_px = frame < 0.5
-                self.mean_train = rho * background_px + (1-rho)*self.mean_train
-                self.std_train = rho * (background_px - self.mean_train)**2 + (1 - rho) * self.std_train
-            out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
-        
-            self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
-            cv2.imshow('',self.mean_train)
-            #cv2.imshow('',out_frame.astype(np.uint8)*255)
-            cv2.waitKey(200)
-        return out_frame
+                background = frame != 255
+                self.mean_train[background] = rho * frame[background] + (1-rho)*self.mean_train[background]
+                self.std_train[background] = np.sqrt(rho * (frame[background]- self.mean_train[background])**2 + (1 - rho) * (self.std_train[background]**2))
+                out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
+                # Clean image with morphological operators
+                kernel = np.ones((3,3), np.uint8) 
+                out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_OPEN, kernel)
+                out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_CLOSE, kernel)
+                
+            else:
+                out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
+                self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
+            #cv2.imshow('',self.mean_train)
+            cv2.imshow('',out_frame.astype(np.uint8)*255)
+            cv2.waitKey(20)
+            ff = frame
+        return ff
+
+#    def classifyTest(self,alpha,rho,isAdaptive):
+#        print('Classifying frames')
+#        out_frame =np.empty(np.shape(self.train_frames))
+#        for i, frame in self.test_frames:
+#            if isAdaptive: # Only background pixels
+#                self.mean_train = rho * (frame==0) + (1-rho)*self.mean_train
+#                self.std_train = np.sqrt(rho * ((frame==0) - self.mean_train)**2 + (1 - rho) * (self.std_train**2))
+#                out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
+#            else:
+#                out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
+#            self.gaussian_frames.append([i, out_frame.astype(np.uint8)])
+#            #cv2.imshow('',self.mean_train)
+#            cv2.imshow('',out_frame.astype(np.uint8)*255)
+#            cv2.waitKey(20)
+#        return out_frame
             
 
     def state_of_art(self):
