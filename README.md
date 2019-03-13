@@ -37,7 +37,7 @@ The project is divided into 5 weeks and, this year, is based on The NVIDIA AI CI
 - Week 1:
 
 - Week 2: 
-  Change path to /frames folder location in: model/gaussianModel.py
+  Change path to /frames folder location in: model/gaussianModel.py\
   run main.py
 
 - Week 3: (not yet)
