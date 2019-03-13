@@ -5,11 +5,13 @@ from model import OneGaussianVideo
 if __name__ == '__main__':
     # Task 0, read data, train model and initialize 
     modelG=OneGaussianVideo() # Reads video, initializes class
-    modelG.modeltrainGaussian() # Compute gaussian parameters (mean img, etc)
+    mean_img=modelG.modeltrainGaussian() # Compute gaussian parameters (mean img, etc)
+    cv2.imshow('',mean_img)
+    cv2.waitKey()
     
     # Task 1 
     print('___________Task 1___________')
-    modelG.classifyTest(alpha=3, rho=0.2, isAdaptive=False, showVideo=True) # Apply gaussian to frames
+    modelG.classifyTest(alpha=10, rho=0.2, isAdaptive=False, showVideo=True) # Apply gaussian to frames
     cv2.destroyAllWindows()
     
     #TODO  Evaluation of task 1, mAP

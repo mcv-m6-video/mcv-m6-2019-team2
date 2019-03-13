@@ -24,7 +24,7 @@ class OneGaussianVideo:
 
     def readVideoBW(self,dir_path='/home/arnau/Documents/Master/M6/mcv-m6-2019-team2/datasets/train/S03/c010'):
         #Frame path
-        frame_path=dir_path+'/framesss' # /frames -> For the full data
+        frame_path=dir_path+'/frames' # /frames -> For the full data
         #gt path
         gt_path=dir_path+'/gt'
         frame_list = sorted(os.listdir(frame_path))
@@ -63,12 +63,13 @@ class OneGaussianVideo:
         self.std_train = np.std(t_frames,0).astype(np.uint8)
 #        cv2.imshow('',self.mean_train)
 #        cv2.waitKey(20)
+        return self.mean_train
 
 
     def classifyTest(self,alpha,rho,isAdaptive,showVideo):
         print('Classifying frames')
-        out_frame =np.empty(np.shape(self.train_frames)) # Initialize empty frame
         for i, frame in self.test_frames:
+            out_frame =np.empty(np.shape(frame)) # Initialize empty frame # Initialize empty frame
             if isAdaptive: 
                 background = frame != 255 # Only background pixels
                 #Equations from the slides [Adaptive Modelling]
@@ -78,6 +79,13 @@ class OneGaussianVideo:
             else:
                 #Equations from the slides [Gaussian Modelling]
                 out_frame = np.abs(frame-self.mean_train) >= alpha*(self.std_train+2)
+#                for row in range(np.shape(frame)[0]):
+#                    for col in range(np.shape(frame)[1]):
+#                        if np.abs(frame[row, col]-self.mean_train[row, col]) >= alpha*(self.std_train[row, col]+2):                   
+#                            out_frame[row, col] = 1
+#                        else:
+#                            out_frame[row, col] = 0
+            
             # Clean image with morphological operators (noisy areas, and holes)
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2,2))
             out_frame = cv2.morphologyEx(out_frame.astype(np.uint8), cv2.MORPH_OPEN, kernel)
